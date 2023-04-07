@@ -1,0 +1,37 @@
+{
+  "head": {
+    "vars": [
+      "geoPlace",
+      "geoName",
+      "dbpediaProducer",
+      "lmdbProducer",
+      "dbpPlace"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "geoPlace": {
+          "type": "uri",
+          "value": "http://sws.geonames.org/4508722/"
+        },
+        "geoName": {
+          "type": "literal",
+          "value": "Ohio"
+        },
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://data.linkedmdb.org/resource/producer/9752"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      }
+    ]
+  }
+}

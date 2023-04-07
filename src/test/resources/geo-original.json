@@ -1,0 +1,13 @@
+{
+  "head": {
+    "vars": [ "geoPlace" , "geoName" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "geoPlace": { "type": "uri" , "value": "http://sws.geonames.org/4508722/" } ,
+        "geoName": { "type": "literal" , "value": "Cincinnati" }
+      }
+    ]
+  }
+}

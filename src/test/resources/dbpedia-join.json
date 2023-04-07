@@ -1,0 +1,660 @@
+{
+  "head": {
+    "link": [],
+    "vars": [
+      "dbpediaProducer",
+      "lmdbProducer",
+      "dbpPlace"
+    ]
+  },
+  "results": {
+    "distinct": false,
+    "ordered": true,
+    "bindings": [
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q8877"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://cs.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://de.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://es.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://eu.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://fr.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://id.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://it.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://ja.dbpedia.org/resource/\u30B9\u30C6\u30A3\u30FC\u30F4\u30F3\u30FB\u30B9\u30D4\u30EB\u30D0\u30FC\u30B0"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://ko.dbpedia.org/resource/\uC2A4\uD2F0\uBE10_\uC2A4\uD544\uBC84\uADF8"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://nl.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://pl.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://pt.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://wikidata.dbpedia.org/resource/Q8877"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://el.dbpedia.org/resource/\u03A3\u03C4\u03AF\u03B2\u03B5\u03BD_\u03A3\u03C0\u03AF\u03BB\u03BC\u03C0\u03B5\u03C1\u03B3\u03BA"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://data.linkedmdb.org/resource/producer/9752"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://data.europa.eu/euodp/jrc-names/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://data.nytimes.com/N25085366413366297953"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://www.bbc.co.uk/things/ab09d9bd-bfbd-4baf-a1cf-b89d187a8e0a#id"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://rdf.freebase.com/ns/m.06pj8"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://sw.cyc.com/concept/Mx4rwJzvpZwpEbGdrcN5Y29ycA"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://yago-knowledge.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://d-nb.info/gnd/118812068"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Ohio"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q8877"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://cs.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://de.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://es.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://eu.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://fr.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://id.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://it.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://ja.dbpedia.org/resource/\u30B9\u30C6\u30A3\u30FC\u30F4\u30F3\u30FB\u30B9\u30D4\u30EB\u30D0\u30FC\u30B0"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://ko.dbpedia.org/resource/\uC2A4\uD2F0\uBE10_\uC2A4\uD544\uBC84\uADF8"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://nl.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://pl.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://pt.dbpedia.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://wikidata.dbpedia.org/resource/Q8877"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://el.dbpedia.org/resource/\u03A3\u03C4\u03AF\u03B2\u03B5\u03BD_\u03A3\u03C0\u03AF\u03BB\u03BC\u03C0\u03B5\u03C1\u03B3\u03BA"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://data.linkedmdb.org/resource/producer/9752"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://data.europa.eu/euodp/jrc-names/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://data.nytimes.com/N25085366413366297953"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://www.bbc.co.uk/things/ab09d9bd-bfbd-4baf-a1cf-b89d187a8e0a#id"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://rdf.freebase.com/ns/m.06pj8"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://sw.cyc.com/concept/Mx4rwJzvpZwpEbGdrcN5Y29ycA"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://yago-knowledge.org/resource/Steven_Spielberg"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      },
+      {
+        "dbpediaProducer": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Steven_Spielberg"
+        },
+        "lmdbProducer": {
+          "type": "uri",
+          "value": "http://d-nb.info/gnd/118812068"
+        },
+        "dbpPlace": {
+          "type": "uri",
+          "value": "http://dbpedia.org/resource/Cincinnati"
+        }
+      }
+    ]
+  }
+}

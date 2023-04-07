@@ -1,0 +1,181 @@
+{
+  "head": {
+    "vars": [ "movie" , "name" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Indiana_Jones_and_the_Last_Crusade" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Indiana Jones and the Last Crusade" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Raiders_of_the_Lost_Ark" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Raiders of the Lost Ark" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/The_Adventures_of_Tintin_(film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "The Adventures of Tintin" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Schindler's_List" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Schindler's List" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/1941_(film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "1941" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/The_Color_Purple_(film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "The Color Purple" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/The_Terminal" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "The Terminal" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Firelight_(1964_film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Firelight" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Saving_Private_Ryan" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Saving Private Ryan" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Always_(1989_film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Always" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Empire_of_the_Sun_(film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Empire of the Sun" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/War_Horse_(film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "War Horse" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/The_Sugarland_Express" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "The Sugarland Express" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Indiana_Jones_(franchise)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Indiana Jones" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Ready_Player_One_(film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Ready Player One" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Amistad_(film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Amistad" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Munich_(film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Munich" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/E.T._the_Extra-Terrestrial" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "E.T. the Extra-Terrestrial" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Hook_(film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Hook" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Jurassic_Park" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Jurassic Park" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/The_BFG_(2016_film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "The BFG" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Indiana_Jones_and_the_Temple_of_Doom" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Indiana Jones and the Temple of Doom" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Jaws_(film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Jaws" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Jurassic_Park_(film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Jurassic Park" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Amblin'" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Amblin'" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/A.I._Artificial_Intelligence" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "A.I. Artificial Intelligence" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Lincoln_(film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Lincoln" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Savage_(1973_film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Savage" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/The_Lost_World:_Jurassic_Park" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "The Lost World: Jurassic Park" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Catch_Me_If_You_Can" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Catch Me If You Can" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/War_of_the_Worlds_(2005_film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "War of the Worlds" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Indiana_Jones_and_the_Kingdom_of_the_Crystal_Skull" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Kingdom of the Crystal Skull" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Indiana_Jones_and_the_Kingdom_of_the_Crystal_Skull" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Indiana Jones and the" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Close_Encounters_of_the_Third_Kind" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Close Encounters" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Close_Encounters_of_the_Third_Kind" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "of the Third Kind" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Duel_(1971_film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Duel" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Night_Gallery_(film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Night Gallery" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/L.A._2017" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "L.A. 2017" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Something_Evil" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Something Evil" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Minority_Report_(film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Minority Report" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Jaws_(franchise)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Jaws" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Twilight_Zone:_The_Movie" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Twilight Zone: The Movie" }
+      } ,
+      {
+        "movie": { "type": "uri" , "value": "http://dbpedia.org/resource/Bridge_of_Spies_(film)" } ,
+        "name": { "type": "literal" , "xml:lang": "en" , "value": "Bridge of Spies" }
+      }
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "head": {
+    "vars": [ "lmdbProducer" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "lmdbProducer": { "type": "uri" , "value": "http://data.linkedmdb.org/resource/producer/9752" }
+      }
+    ]
+  }
+}

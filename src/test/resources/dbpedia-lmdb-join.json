@@ -1,0 +1,19 @@
+{
+  "head": {
+    "vars": [ "dbpediaProducer" , "lmdbProducer" , "dbpPlace" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "dbpediaProducer": { "type": "uri" , "value": "http://dbpedia.org/resource/Steven_Spielberg" } ,
+        "lmdbProducer": { "type": "uri" , "value": "http://data.linkedmdb.org/resource/producer/9752" } ,
+        "dbpPlace": { "type": "uri" , "value": "http://dbpedia.org/resource/Ohio" }
+      } ,
+      {
+        "dbpediaProducer": { "type": "uri" , "value": "http://dbpedia.org/resource/Steven_Spielberg" } ,
+        "lmdbProducer": { "type": "uri" , "value": "http://data.linkedmdb.org/resource/producer/9752" } ,
+        "dbpPlace": { "type": "uri" , "value": "http://dbpedia.org/resource/Cincinnati" }
+      }
+    ]
+  }
+}

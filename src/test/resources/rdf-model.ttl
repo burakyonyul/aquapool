@@ -1,0 +1,168 @@
+@prefix dbo:   <http://dbpedia.org/ontology/> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+
+<http://dbpedia.org/resource/The_Adventures_of_Tintin_(film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "The Adventures of Tintin"@en .
+
+<http://dbpedia.org/resource/Jurassic_Park_(film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Jurassic Park"@en .
+
+<http://dbpedia.org/resource/Minority_Report_(film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Minority Report"@en .
+
+<http://dbpedia.org/resource/Ready_Player_One_(film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Ready Player One"@en .
+
+<http://dbpedia.org/resource/The_Lost_World:_Jurassic_Park>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "The Lost World: Jurassic Park"@en .
+
+<http://dbpedia.org/resource/Hook_(film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Hook"@en .
+
+<http://dbpedia.org/resource/Twilight_Zone:_The_Movie>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Twilight Zone: The Movie"@en .
+
+<http://dbpedia.org/resource/Jaws_(franchise)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Jaws"@en .
+
+<http://dbpedia.org/resource/1941_(film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "1941"@en .
+
+<http://dbpedia.org/resource/The_BFG_(2016_film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "The BFG"@en .
+
+<http://dbpedia.org/resource/Bridge_of_Spies_(film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Bridge of Spies"@en .
+
+<http://dbpedia.org/resource/Indiana_Jones_and_the_Temple_of_Doom>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Indiana Jones and the Temple of Doom"@en .
+
+<http://dbpedia.org/resource/A.I._Artificial_Intelligence>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "A.I. Artificial Intelligence"@en .
+
+<http://dbpedia.org/resource/Amblin'>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Amblin'"@en .
+
+<http://dbpedia.org/resource/E.T._the_Extra-Terrestrial>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "E.T. the Extra-Terrestrial"@en .
+
+<http://dbpedia.org/resource/Jurassic_Park>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Jurassic Park"@en .
+
+<http://dbpedia.org/resource/The_Terminal>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "The Terminal"@en .
+
+<http://dbpedia.org/resource/Firelight_(1964_film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Firelight"@en .
+
+<http://dbpedia.org/resource/Schindler's_List>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Schindler's List"@en .
+
+<http://dbpedia.org/resource/Indiana_Jones_and_the_Kingdom_of_the_Crystal_Skull>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Kingdom of the Crystal Skull"@en , "Indiana Jones and the"@en .
+
+<http://dbpedia.org/resource/The_Color_Purple_(film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "The Color Purple"@en .
+
+<http://dbpedia.org/resource/Saving_Private_Ryan>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Saving Private Ryan"@en .
+
+<http://dbpedia.org/resource/Indiana_Jones_and_the_Last_Crusade>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Indiana Jones and the Last Crusade"@en .
+
+<http://dbpedia.org/resource/Empire_of_the_Sun_(film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Empire of the Sun"@en .
+
+<http://dbpedia.org/resource/Always_(1989_film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Always"@en .
+
+<http://dbpedia.org/resource/Lincoln_(film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Lincoln"@en .
+
+<http://dbpedia.org/resource/Indiana_Jones_(franchise)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Indiana Jones"@en .
+
+<http://dbpedia.org/resource/Duel_(1971_film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Duel"@en .
+
+<http://dbpedia.org/resource/War_Horse_(film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "War Horse"@en .
+
+<http://dbpedia.org/resource/The_Sugarland_Express>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "The Sugarland Express"@en .
+
+<http://dbpedia.org/resource/Savage_(1973_film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Savage"@en .
+
+<http://dbpedia.org/resource/Amistad_(film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Amistad"@en .
+
+<http://dbpedia.org/resource/Raiders_of_the_Lost_Ark>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Raiders of the Lost Ark"@en .
+
+<http://dbpedia.org/resource/L.A._2017>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "L.A. 2017"@en .
+
+<http://dbpedia.org/resource/Munich_(film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Munich"@en .
+
+<http://dbpedia.org/resource/Close_Encounters_of_the_Third_Kind>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "of the Third Kind"@en , "Close Encounters"@en .
+
+<http://dbpedia.org/resource/War_of_the_Worlds_(2005_film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "War of the Worlds"@en .
+
+<http://dbpedia.org/resource/Catch_Me_If_You_Can>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Catch Me If You Can"@en .
+
+<http://dbpedia.org/resource/Jaws_(film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Jaws"@en .
+
+<http://dbpedia.org/resource/Night_Gallery_(film)>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Night Gallery"@en .
+
+<http://dbpedia.org/resource/Something_Evil>
+        dbo:director  <http://dbpedia.org/resource/Steven_Spielberg> ;
+        foaf:name     "Something Evil"@en .
