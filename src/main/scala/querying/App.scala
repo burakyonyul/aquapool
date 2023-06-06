@@ -74,20 +74,24 @@ object App {
 
     ClusterClientReceptionist(system).registerService(federatorRegion)
 
+    /*
     ClusterSharding(system).start(
       typeName = "Distributor",
       entityProps = Props[Distributor],
       settings = ClusterShardingSettings(system),
       extractEntityId = Distributor.extractEntityId,
       extractShardId = Distributor.extractShardId)
+     */
 
+    /*
     ClusterSharding(system).start(
       typeName = "Executor",
       entityProps = Props[Executor],
       settings = ClusterShardingSettings(system),
       extractEntityId = Executor.extractEntityId,
       extractShardId = Executor.extractShardId)
-/*
+     */
+    /*
     ClusterSharding(system).start(
       typeName = "ParallelJoinManager",
       entityProps = Props[ParallelJoinManager],
@@ -101,7 +105,6 @@ object App {
       settings = ClusterShardingSettings(system),
       extractEntityId = HashJoinPerformer.extractEntityId,
       extractShardId = HashJoinPerformer.extractShardId)
-
-*/
+    */
   }
 }

@@ -1,22 +1,24 @@
 package querying.actor
 
-import akka.actor.{Actor, ActorLogging}
-import akka.cluster.sharding.ShardRegion
-import com.hp.hpl.jena.query.QueryExecutionFactory
+import akka.actor.{Actor, ActorLogging, Props}
 import org.apache.spark.util.SizeEstimator
 import querying.main.MonitoringUtils
-import querying.message.{ExecuteServiceClause, Result}
+import querying.message.ExecuteQuery
+import querying.message.Store._
 
 object Executor {
+  /*
   val extractEntityId: ShardRegion.ExtractEntityId = {
-    case esc@ExecuteServiceClause(_, _) => (esc.hashCode.toString, esc)
+    case esc@ExecuteQuery(_, _) => (esc.hashCode.toString, esc)
   }
 
   private val numberOfShards = 20
 
   val extractShardId: ShardRegion.ExtractShardId = {
-    case esc@ExecuteServiceClause(_, _) => (esc.hashCode % numberOfShards).toString
+    case esc@ExecuteQuery(_, _) => (esc.hashCode % numberOfShards).toString
   }
+   */
+  def props: Props = Props(new Executor)
 }
 
 class Executor extends Actor with ActorLogging {
@@ -34,20 +36,30 @@ class Executor extends Actor with ActorLogging {
   }
 
   override def receive: Receive = {
-    case esc@ExecuteServiceClause(query, endpoint) =>
+    case esc@ExecuteQuery(query, store) =>
       //log.info("Sender path: {}, self path {}",sender().path,self.path)
-      log.debug("Hash Code for Execute SERVICE Clause: [{}], and Query Value: [{}], Endpoint Value: [{}]", esc.hashCode, query, endpoint)
-      val result = executeServiceClause(query, endpoint)
+      log.debug("Hash Code for Execute SERVICE Clause: [{}], and Query Value: [{}], Endpoint Value: [{}]", esc.hashCode, query, store)
+      val result = executeQuery(query, store)
       sender ! result
       val sizeInBytes = SizeEstimator.estimate(result)
-      log.info("Size of the new result message sent from Executor to Distributor is: [{}] Bytes, and is [{}]",sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
+      log.info("Size of the new result message sent from Executor to Distributor is: [{}] Bytes, and is [{}]", sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
   }
 
-  protected def executeServiceClause(query: String, endpoint: String) = {
-    val execution = QueryExecutionFactory.sparqlService(endpoint, query)
+  protected def executeQuery(query: String, store: Store) = {
+    /*
+    val execution = QueryExecutionFactory.sparqlService(store, query)
     val result = MonitoringUtils.convertRdf2Result(execution.execSelect())
     execution.close()
-    Result(result.resultJSON, result.resultVars, endpoint.hashCode)
+    Result(result.resultJSON, result.resultVars, store.hashCode)
+     */
+    store match {
+      case Redis => println("Redis query");
+      case Postgresql => println("Postgresql query")
+      case Influxdb => println("InfluxDB query")
+      case Elasticsearch => println("Elasticsearch query")
+      case _ => println("Unknown store query")
+    }
+    None
   }
 
 }

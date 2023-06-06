@@ -7,7 +7,7 @@ import com.hp.hpl.jena.sparql.resultset.ResultsFormat
 import main.QueryIterCollection
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import querying.main.MonitoringUtils
-import querying.message.{DistributeServiceClause, Result, ResultChange}
+import querying.message.{DistributeQuery, Result, ResultChange}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.duration._
@@ -21,7 +21,7 @@ class DistributorTest extends TestKit(ActorSystem("DistributorTest")) with Impli
 
   "A Distributor actor" must {
 
-    val dsc = DistributeServiceClause(TestUtils.PERSON_SELECT_QUERY, Vector(TestUtils.DBPEDIA_RESULT_FILE_NAME, TestUtils.IMDB_RESULT_FILE_NAME))
+    val dsc = DistributeQuery(TestUtils.PERSON_SELECT_QUERY, Vector(TestUtils.DBPEDIA_RESULT_FILE_NAME, TestUtils.IMDB_RESULT_FILE_NAME))
     "distribute a service clause and return result to the sender" in {
       val probe = TestProbe()
       // create a new actor

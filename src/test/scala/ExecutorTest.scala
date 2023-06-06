@@ -6,7 +6,7 @@ import com.hp.hpl.jena.query.{ResultSet, ResultSetFactory}
 import com.hp.hpl.jena.sparql.resultset.ResultsFormat
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import querying.main.MonitoringUtils
-import querying.message.{ExecuteServiceClause, Result, ResultChange}
+import querying.message.{ExecuteQuery, Result, ResultChange}
 
 import scala.concurrent.duration._
 

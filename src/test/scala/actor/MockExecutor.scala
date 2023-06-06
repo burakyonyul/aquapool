@@ -12,10 +12,10 @@ import scala.concurrent.duration._
 
 class MockExecutor extends Executor {
 
-  override protected def executeServiceClause(query: String, endpoint: String): Result = {
-    val res = ResultSetFactory.load(endpoint, ResultsFormat.FMT_RS_JSON)
+  override protected def executeQuery(query: String, store: String): Result = {
+    val res = ResultSetFactory.load(store, ResultsFormat.FMT_RS_JSON)
     val resultMock = MonitoringUtils.convertRdf2Result(res)
-    Result(resultMock.resultJSON, resultMock.resultVars, endpoint.hashCode)
+    Result(resultMock.resultJSON, resultMock.resultVars, store.hashCode)
   }
 
   override protected def schedule(ssc: ScheduledServiceClause): Cancellable = {

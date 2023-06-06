@@ -1,25 +1,25 @@
 package querying.actor
 
-import akka.actor.{Actor, ActorLogging, ActorRef}
-import akka.cluster.sharding.{ClusterSharding, ShardRegion}
-import main.{DirectedQuery, QueryManager, Union}
+import akka.actor.{Actor, ActorLogging}
+import akka.cluster.sharding.ShardRegion
+import main.QueryManager
 import org.apache.spark.util.SizeEstimator
 import querying.main.MonitoringUtils
+import querying.message.Store.Store
 import querying.message._
 
-import java.util
 import scala.collection.JavaConverters._
 import scala.collection.immutable.HashMap
 
 object Federator {
   val extractEntityId: ShardRegion.ExtractEntityId = {
-    case msg@FederateQuery(query, _) => (query.hashCode.toString, msg)
+    case msg@PolyStoreQuery(hashMap: HashMap[String, Seq[Store]], _) => (hashMap.hashCode.toString, msg)
   }
 
   private val numberOfShards = 20
 
   val extractShardId: ShardRegion.ExtractShardId = {
-    case FederateQuery(query, _) => (query.hashCode % numberOfShards).toString
+    case PolyStoreQuery(hashMap, _) => (hashMap.hashCode % numberOfShards).toString
   }
 }
 
@@ -29,7 +29,7 @@ class Federator extends Actor with ActorLogging {
   private var results: Vector[Result] = Vector.empty
   private var querySender: Option[String] = None
   private var resultMap: HashMap[Int, Result] = HashMap.empty
-  private var federateQuery: Option[FederateQuery] = None
+  private var polyStoreQuery: Option[PolyStoreQuery] = None
   private var startTimeInMillis = 0L;
 
   override def preStart(): Unit = {
@@ -45,31 +45,19 @@ class Federator extends Actor with ActorLogging {
   }
 
   override def receive: Receive = {
-    case fq@FederateQuery(query, senderPath) =>
+    case psq@PolyStoreQuery(queryStoreMap, senderPath) =>
       //log.info("Sender path: {}, self path {}",sender().path,self.path)
       startTimeInMillis = System.currentTimeMillis()
-      federateQuery = Some(fq)
-      //MetricStoreUtils.incrementQueryCount(fq)
-      val sizeInBytes = SizeEstimator.estimate(federateQuery)
+      polyStoreQuery = Some(psq)
+      //MetricStoreUtils.incrementQueryCount(psq)
+      val sizeInBytes = SizeEstimator.estimate(polyStoreQuery)
       log.info("Size of the FederateQuery message sent from Agent to Federator is: [{}] Bytes, and is [{}]", sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
-      log.debug("Hash Code for Federate Query: [{}], and Query Value: [{}]", fq.hashCode, query)
+      log.debug("Hash Code for Federate Query: [{}], and Query Value: [{}]", psq.hashCode, queryStoreMap)
       querySender = Some(senderPath)
-      federate(query)
+      distribute(queryStoreMap)
     case receivedResult@Result(_, _, _) =>
       // get hash join performer region
       processResult(receivedResult)
-    case rc@ResultChange(_, _) =>
-      applyChange(rc)
-  }
-
-  protected def federate(query: String): Unit = {
-    val distributorRegion = ClusterSharding.get(context.system).shardRegion("Distributor")
-    federate(query, distributorRegion)
-  }
-
-  protected def federate(query: String, federator: ActorRef): Unit = {
-    val directedQueries = QueryManager.splitFederatedQuery(query, new util.ArrayList[Union])
-    distribute(federator, directedQueries)
   }
 
   protected def processResult(receivedResult: Result): Unit = {
@@ -83,10 +71,10 @@ class Federator extends Actor with ActorLogging {
     // if query completed print result
     if (resultCount == 0 && results.size == 1) {
       val sizeInBytes = SizeEstimator.estimate(receivedResult)
-      log.info("Result has been constructed for the federated query [{}]", federateQuery.get.query)
+      log.info("Result has been constructed for the polystore query [{}]", polyStoreQuery.get.queryStoreMap)
       context.actorSelection(querySender.get) ! receivedResult
       log.info("Federated query has been performed in: [{}] milliseconds", System.currentTimeMillis() - startTimeInMillis)
-      log.info("Size of the result message sent from Federator to Agent is: [{}] Bytes, and is [{}]", sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
+      log.info("Size of the result message sent from Federator to Sender is: [{}] Bytes, and is [{}]", sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
     }
   }
 
@@ -104,28 +92,19 @@ class Federator extends Actor with ActorLogging {
     false
   }
 
-  private def applyChange(resultChange: ResultChange) = {
-    resultCount = resultMap.size - 1
-    resultMap += (resultChange.result.key -> resultChange.result)
-    results = resultMap.values.toVector.filterNot(res => res == resultChange.result)
-    startTimeInMillis = resultChange.detectionTime
-    self ! resultChange.result
-  }
-
-  protected def distribute(distributorRegion: ActorRef, directedQueries: util.List[DirectedQuery]) = {
-    resultCount = directedQueries.size - 1
-    directedQueries forEach {
-      directedQuery => {
-        directToDistributor(distributorRegion, directedQuery)
-      }
+  protected def distribute(queryStoreMap: HashMap[String, Seq[Store]]) = {
+    resultCount = queryStoreMap.keys.size - 1
+    for ((query, storeList) <- queryStoreMap) {
+      directToDistributor(query, storeList)
     }
   }
 
-  protected def directToDistributor(distributorRegion: ActorRef, directedQuery: DirectedQuery): Unit = {
-    val federateServiceClause = DistributeServiceClause(directedQuery.getQuery, directedQuery.getEndpoints.asScala)
-    distributorRegion ! federateServiceClause
-    val sizeInBytes = SizeEstimator.estimate(federateServiceClause)
-    log.info("Size of the DistributeServiceClause message sent from Federator to Distributor is: [{}] Bytes, and is [{}]", sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
+  protected def directToDistributor(query: String, storeList: Seq[Store]): Unit = {
+    val distributeQuery = DistributeQuery(query, storeList)
+    val distributor = context.actorOf(Distributor.props)
+    distributor ! distributeQuery
+    val sizeInBytes = SizeEstimator.estimate(distributeQuery)
+    log.info("Size of the DistributeQuery message sent from Federator to Distributor is: [{}] Bytes, and is [{}]", sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
   }
 
 }

@@ -3,7 +3,7 @@ package actor
 import akka.actor.{ActorRef, Props}
 import main.DirectedQuery
 import querying.actor.Federator
-import querying.message.{DistributeServiceClause, Result}
+import querying.message.{DistributeQuery, Result}
 
 import java.util
 import scala.collection.JavaConverters.asScalaBufferConverter
@@ -19,17 +19,17 @@ class MockFederator extends Federator {
     federate(query, ActorRef.noSender)
   }
 
-  override protected def federate(query: String, federator: ActorRef): Unit = {
+  override protected def federate(query: String, distributor: ActorRef): Unit = {
     val directedQueries = new util.ArrayList[DirectedQuery]
     directedQueries.add(new DirectedQuery("query-1", util.Arrays.asList(LMDB_JOIN_RESULT_NAME)))
     directedQueries.add(new DirectedQuery("query-2", util.Arrays.asList(DBPEDIA_JOIN_RESULT_NAME)))
     directedQueries.add(new DirectedQuery("query-3", util.Arrays.asList(GEO_JOIN_RESULT_NAME)))
-    distribute(federator, directedQueries)
+    distribute(distributor, directedQueries)
   }
 
   override protected def directToDistributor(distributorRegion: ActorRef, directedQuery: DirectedQuery): Unit = {
     val dist = context.system.actorOf(Props(new MockDistributor))
-    dist ! DistributeServiceClause(directedQuery.getQuery, directedQuery.getEndpoints.asScala)
+    dist ! DistributeQuery(directedQuery.getQuery, directedQuery.getEndpoints.asScala)
   }
 
   override protected def processResult(receivedResult: Result): Unit = {

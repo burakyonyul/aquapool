@@ -23,8 +23,8 @@ class MonitoringSerializer extends Serializer {
 
     obj match {
       case fq: FederateQuery => Json.toBytes(Json.toJsObject(fq))
-      case fsc: DistributeServiceClause => Json.toBytes(Json.toJsObject(fsc))
-      case esc: ExecuteServiceClause => Json.toBytes(Json.toJsObject(esc))
+      case fsc: DistributeQuery => Json.toBytes(Json.toJsObject(fsc))
+      case esc: ExecuteQuery => Json.toBytes(Json.toJsObject(esc))
       case db: DistributeBuckets => Json.toBytes(Json.toJsObject(db))
       case res: Result => Json.toBytes(Json.toJsObject(res))
       case phj: PerformHashJoin => Json.toBytes(Json.toJsObject(phj))
@@ -42,8 +42,8 @@ class MonitoringSerializer extends Serializer {
                   clazz: Option[Class[_]]): AnyRef = {
     clazz.get.getSimpleName match {
       case "FederateQuery" => Json.parse(bytes).as[FederateQuery]
-      case "DistributeServiceClause" => Json.parse(bytes).as[DistributeServiceClause]
-      case "ExecuteServiceClause" => Json.parse(bytes).as[ExecuteServiceClause]
+      case "DistributeQuery" => Json.parse(bytes).as[DistributeQuery]
+      case "ExecuteQuery" => Json.parse(bytes).as[ExecuteQuery]
       case "DistributeBuckets" => Json.parse(bytes).as[DistributeBuckets]
       case "Result" => Json.parse(bytes).as[Result]
       case "PerformHashJoin" => Json.parse(bytes).as[PerformHashJoin]
