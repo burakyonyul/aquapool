@@ -1,13 +1,14 @@
-package querying.actor
+package querying.actor.federation
 
-import akka.actor.{Actor, ActorLogging, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.hp.hpl.jena.query.{ResultSetFactory, ResultSetFormatter}
 import com.hp.hpl.jena.sparql.engine.binding.Binding
 import main.QueryIterCollection
 import org.apache.spark.util.SizeEstimator
 import play.api.libs.json.Json
+import querying.actor.wrapper.{ElasticsearchExecutor, InfluxdbExecutor, PostgresqlExecutor, RedisExecutor}
 import querying.main.MonitoringUtils
-import querying.message.Store.Store
+import querying.message.Store._
 import querying.message.{DistributeQuery, ExecuteQuery, Result}
 
 import java.io.ByteArrayOutputStream
@@ -85,14 +86,30 @@ class Distributor extends Actor with ActorLogging {
   }
 
   protected def distribute(query: String, stores: Seq[Store]) = {
+
     stores foreach {
       store =>
-        val executor = context.actorOf(Executor.props)
-        val executeQuery = ExecuteQuery(query, store)
+        val executeQuery = ExecuteQuery(query)
+        val executor: ActorRef = {
+          case Redis =>
+            context.actorOf(RedisExecutor.props)
+
+          case Postgresql =>
+            context.actorOf(PostgresqlExecutor.props)
+
+          case Influxdb =>
+            context.actorOf(InfluxdbExecutor.props)
+
+          case Elasticsearch =>
+            context.actorOf(ElasticsearchExecutor.props)
+          case _ => None
+        }
         executor ! executeQuery
         val sizeInBytes = SizeEstimator.estimate(executeQuery)
-        log.info("Size of the ExecuteQuery message sent from Distributor to Executor is: [{}] Bytes, and is [{}]", sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
+        log.info("Size of the ExecuteQuery message sent from Distributor to [{}]Executor is: [{}] Bytes, and is [{}]", store, sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
+
     }
+
 
   }
 

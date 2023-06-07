@@ -1,12 +1,11 @@
 package querying.message
 
-import play.api.libs.json.Json
-import querying.message.Store.Store
+import play.api.libs.json.{Json, OFormat}
 
-case class ExecuteQuery(query: String, store: Store)
+case class ExecuteQuery(query: String)
 
 object ExecuteQuery {
 
-  implicit val esqFormats = Json.format[ExecuteQuery]
+  implicit val esqFormats: OFormat[ExecuteQuery] = Json.format[ExecuteQuery]
 
 }

@@ -6,6 +6,7 @@ import akka.cluster.metrics.ClusterMetricsExtension
 import akka.cluster.sharding.{ClusterSharding, ClusterShardingSettings}
 import com.typesafe.config.ConfigFactory
 import querying.actor._
+import querying.actor.federation.Federator
 
 import java.net._
 
@@ -85,11 +86,11 @@ object App {
 
     /*
     ClusterSharding(system).start(
-      typeName = "Executor",
-      entityProps = Props[Executor],
+      typeName = "RdfStoreExecutor",
+      entityProps = Props[RdfStoreExecutor],
       settings = ClusterShardingSettings(system),
-      extractEntityId = Executor.extractEntityId,
-      extractShardId = Executor.extractShardId)
+      extractEntityId = RdfStoreExecutor.extractEntityId,
+      extractShardId = RdfStoreExecutor.extractShardId)
      */
     /*
     ClusterSharding(system).start(

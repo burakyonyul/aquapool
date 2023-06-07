@@ -17,7 +17,7 @@ class ExecutorTest extends TestKit(ActorSystem("ExecutorTest")) with ImplicitSen
     TestKit.shutdownActorSystem(system)
   }
 
-  "An Executor actor" must {
+  "An RdfStoreExecutor actor" must {
 
     "execute query and return result to its register list" in {
 

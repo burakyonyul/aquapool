@@ -1,7 +1,7 @@
 package actor
 
 import akka.actor.Props
-import querying.actor.Distributor
+import querying.actor.federation.Distributor
 import querying.message.ExecuteQuery
 
 class MockDistributor extends Distributor {

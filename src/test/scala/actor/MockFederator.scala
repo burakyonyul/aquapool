@@ -2,7 +2,7 @@ package actor
 
 import akka.actor.{ActorRef, Props}
 import main.DirectedQuery
-import querying.actor.Federator
+import querying.actor.federation.Federator
 import querying.message.{DistributeQuery, Result}
 
 import java.util

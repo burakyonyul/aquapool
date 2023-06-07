@@ -13,7 +13,7 @@ object ResultMap {
   }
 
   def retrieve(key: Int, result: Result): Unit = {
-    if (map.get(key).isEmpty) {
+    if (!map.contains(key)) {
       insert(result)
     }
     map(key)

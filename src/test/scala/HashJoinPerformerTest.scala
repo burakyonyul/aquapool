@@ -1,7 +1,7 @@
 import akka.actor.{ActorSystem, PoisonPill, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
-import querying.actor.HashJoinPerformer
+import querying.actor.join.HashJoinPerformer
 import querying.message.PerformHashJoin
 
 class HashJoinPerformerTest extends TestKit(ActorSystem("HashJoinPerformerTest")) with ImplicitSender

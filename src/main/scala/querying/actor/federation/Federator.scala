@@ -1,9 +1,10 @@
-package querying.actor
+package querying.actor.federation
 
 import akka.actor.{Actor, ActorLogging}
 import akka.cluster.sharding.ShardRegion
 import main.QueryManager
 import org.apache.spark.util.SizeEstimator
+import querying.actor.join.ParallelJoinManager
 import querying.main.MonitoringUtils
 import querying.message.Store.Store
 import querying.message._

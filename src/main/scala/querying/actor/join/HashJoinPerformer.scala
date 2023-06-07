@@ -1,4 +1,4 @@
-package querying.actor
+package querying.actor.join
 
 import akka.actor.{Actor, ActorLogging, Props}
 import com.hp.hpl.jena.query.ResultSetFormatter

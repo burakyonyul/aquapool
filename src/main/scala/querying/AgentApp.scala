@@ -1,11 +1,10 @@
 package querying
 
 import akka.actor.ActorSystem
-import akka.cluster.client.{ClusterClient, ClusterClientSettings}
 import com.typesafe.config.ConfigFactory
 import querying.actor.Agent
 import querying.main.OrganizationConstants
-import querying.message.Register
+import querying.message.PolyStoreQuery
 
 import java.net.{InetAddress, NetworkInterface}
 
@@ -28,8 +27,7 @@ object AgentApp {
       withFallback(ConfigFactory.load("agent.conf"))
 
     // Create an Akka system
-    val system = ActorSystem("Subscribing", config)
-    val client = system.actorOf(ClusterClient.props(ClusterClientSettings(system)), "client")
+    val system = ActorSystem("Polystore", config)
     val bunch_count = (query_count * bunch_percent).toInt
     for (index <- 1 to query_count) {
       val agent = system.actorOf(Agent.props, "Agent-" + index)
@@ -43,7 +41,8 @@ object AgentApp {
       }
 
       //val federatedQuery = String.format(OrganizationConstants.FEDERATED_STOCK_QUERY_TEMPLATE,DBPEDIA_COMPANY_RESOURCE_URI_TEMPLATE+index)
-      agent ! Register(federatedQuery, client)
+      //TODO: fix the query generation
+      agent ! PolyStoreQuery(null, "")
       if (index % (bunch_count) == 0) {
         //println("Index: "+index + ", bunch count: "+ bunch_count + ", Query count: "+MetricStore.get(Constants.QUERY_COUNT).get + ", Actor count: "+MetricStore.get(Constants.ACTOR_COUNT).get)
         Thread.sleep(60000)

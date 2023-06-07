@@ -1,7 +1,8 @@
 package actor
 
 import akka.actor.Props
-import querying.actor.{HashJoinPerformer, ParallelJoinManager}
+import querying.actor.ParallelJoinManager
+import querying.actor.join.{HashJoinPerformer, ParallelJoinManager}
 import querying.message.Result
 
 class MockParallelJoinManager extends ParallelJoinManager {
