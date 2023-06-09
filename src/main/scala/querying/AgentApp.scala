@@ -7,7 +7,11 @@ import querying.main.OrganizationConstants
 import querying.message.PolyStoreQuery
 
 import java.net.{InetAddress, NetworkInterface}
+import scala.collection.immutable.HashMap
 
+/**
+ * TODO: Polystore use cases need to be generated
+ */
 object AgentApp {
 
   def main(args: Array[String]): Unit = {
@@ -42,7 +46,7 @@ object AgentApp {
 
       //val federatedQuery = String.format(OrganizationConstants.FEDERATED_STOCK_QUERY_TEMPLATE,DBPEDIA_COMPANY_RESOURCE_URI_TEMPLATE+index)
       //TODO: fix the query generation
-      agent ! PolyStoreQuery(null, "")
+      agent ! PolyStoreQuery(HashMap.empty[String, String], "")
       if (index % (bunch_count) == 0) {
         //println("Index: "+index + ", bunch count: "+ bunch_count + ", Query count: "+MetricStore.get(Constants.QUERY_COUNT).get + ", Actor count: "+MetricStore.get(Constants.ACTOR_COUNT).get)
         Thread.sleep(60000)

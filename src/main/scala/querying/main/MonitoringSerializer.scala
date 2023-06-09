@@ -1,8 +1,8 @@
 package querying.main
 
 import akka.serialization.Serializer
-import querying.message._
 import play.api.libs.json.Json
+import querying.message._
 
 class MonitoringSerializer extends Serializer {
   // If you need logging here, introduce a constructor that takes an ExtendedActorSystem.
@@ -22,9 +22,7 @@ class MonitoringSerializer extends Serializer {
   def toBinary(obj: AnyRef): Array[Byte] = {
 
     obj match {
-      case reg: Register => Json.toBytes(Json.toJsObject(reg))
       case psq: PolyStoreQuery => Json.toBytes(Json.toJsObject(psq))
-      case dq: DistributeQuery => Json.toBytes(Json.toJsObject(dq))
       case eq: ExecuteQuery => Json.toBytes(Json.toJsObject(eq))
       case db: DistributeBuckets => Json.toBytes(Json.toJsObject(db))
       case res: Result => Json.toBytes(Json.toJsObject(res))
@@ -41,9 +39,7 @@ class MonitoringSerializer extends Serializer {
                   bytes: Array[Byte],
                   clazz: Option[Class[_]]): AnyRef = {
     clazz.get.getSimpleName match {
-      case "Register" => Json.parse(bytes).as[Register]
       case "PolyStoreQuery" => Json.parse(bytes).as[PolyStoreQuery]
-      case "DistributeQuery" => Json.parse(bytes).as[DistributeQuery]
       case "ExecuteQuery" => Json.parse(bytes).as[ExecuteQuery]
       case "DistributeBuckets" => Json.parse(bytes).as[DistributeBuckets]
       case "Result" => Json.parse(bytes).as[Result]

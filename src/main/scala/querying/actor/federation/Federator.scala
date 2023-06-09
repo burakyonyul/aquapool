@@ -1,12 +1,13 @@
 package querying.actor.federation
 
-import akka.actor.{Actor, ActorLogging}
+import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.cluster.sharding.ShardRegion
 import main.QueryManager
 import org.apache.spark.util.SizeEstimator
 import querying.actor.join.ParallelJoinManager
-import querying.main.MonitoringUtils
-import querying.message.Store.Store
+import querying.actor.wrapper.{ElasticsearchExecutor, InfluxdbExecutor, PostgresqlExecutor, RedisExecutor}
+import querying.main.{Constants, MonitoringUtils}
+import querying.message.Store.{Elasticsearch, Influxdb, Postgresql}
 import querying.message._
 
 import scala.collection.JavaConverters._
@@ -14,13 +15,13 @@ import scala.collection.immutable.HashMap
 
 object Federator {
   val extractEntityId: ShardRegion.ExtractEntityId = {
-    case msg@PolyStoreQuery(hashMap: HashMap[String, Seq[Store]], _) => (hashMap.hashCode.toString, msg)
+    case msg@PolyStoreQuery(queryStoreMap, _) => (queryStoreMap.hashCode.toString, msg)
   }
 
   private val numberOfShards = 20
 
   val extractShardId: ShardRegion.ExtractShardId = {
-    case PolyStoreQuery(hashMap, _) => (hashMap.hashCode % numberOfShards).toString
+    case psq@PolyStoreQuery(queryStoreMap, _) => (queryStoreMap.hashCode % numberOfShards).toString
   }
 }
 
@@ -53,9 +54,9 @@ class Federator extends Actor with ActorLogging {
       //MetricStoreUtils.incrementQueryCount(psq)
       val sizeInBytes = SizeEstimator.estimate(polyStoreQuery)
       log.info("Size of the FederateQuery message sent from Agent to Federator is: [{}] Bytes, and is [{}]", sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
-      log.debug("Hash Code for Federate Query: [{}], and Query Value: [{}]", psq.hashCode, queryStoreMap)
+      log.debug("Hash Code for Federate Query: [{}], and Query Value: [{}]", psq.hashCode, psq)
       querySender = Some(senderPath)
-      distribute(queryStoreMap)
+      distribute(psq)
     case receivedResult@Result(_, _, _) =>
       // get hash join performer region
       processResult(receivedResult)
@@ -72,7 +73,7 @@ class Federator extends Actor with ActorLogging {
     // if query completed print result
     if (resultCount == 0 && results.size == 1) {
       val sizeInBytes = SizeEstimator.estimate(receivedResult)
-      log.info("Result has been constructed for the polystore query [{}]", polyStoreQuery.get.queryStoreMap)
+      log.info("Result has been constructed for the polystore query [{}]", polyStoreQuery.get)
       context.actorSelection(querySender.get) ! receivedResult
       log.info("Federated query has been performed in: [{}] milliseconds", System.currentTimeMillis() - startTimeInMillis)
       log.info("Size of the result message sent from Federator to Sender is: [{}] Bytes, and is [{}]", sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
@@ -93,19 +94,31 @@ class Federator extends Actor with ActorLogging {
     false
   }
 
-  protected def distribute(queryStoreMap: HashMap[String, Seq[Store]]) = {
-    resultCount = queryStoreMap.keys.size - 1
-    for ((query, storeList) <- queryStoreMap) {
-      directToDistributor(query, storeList)
-    }
-  }
+  protected def distribute(polyStoreQuery: PolyStoreQuery) = {
+    resultCount = polyStoreQuery.queryStoreMap.size - 1
 
-  protected def directToDistributor(query: String, storeList: Seq[Store]): Unit = {
-    val distributeQuery = DistributeQuery(query, storeList)
-    val distributor = context.actorOf(Distributor.props)
-    distributor ! distributeQuery
-    val sizeInBytes = SizeEstimator.estimate(distributeQuery)
-    log.info("Size of the DistributeQuery message sent from Federator to Distributor is: [{}] Bytes, and is [{}]", sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
+    for ((query, store) <- polyStoreQuery.queryStoreMap) {
+      val executor: ActorRef = {
+        store match {
+          case Constants.REDIS =>
+            context.actorOf(RedisExecutor.props)
+
+          case Constants.POSTGRESQL =>
+            context.actorOf(PostgresqlExecutor.props)
+
+          case Constants.INFLUXDB =>
+            context.actorOf(InfluxdbExecutor.props)
+
+          case Constants.ELASTICSEARCH =>
+            context.actorOf(ElasticsearchExecutor.props)
+          case _ => ActorRef.noSender
+        }
+      }
+      val executeQuery = ExecuteQuery(query)
+      executor ! executeQuery
+      val sizeInBytes = SizeEstimator.estimate(executeQuery)
+      log.info("Size of the ExecuteQuery message sent from Distributor to [{}]Executor is: [{}] Bytes, and is [{}]", store, sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
+    }
   }
 
 }

@@ -4,9 +4,10 @@ import akka.actor.ActorSystem
 import akka.cluster.client.{ClusterClient, ClusterClientSettings}
 import com.typesafe.config.ConfigFactory
 import querying.actor.Agent
-import querying.message.Register
+import querying.message.{PolyStoreQuery, Register}
 
 import java.net.{InetAddress, NetworkInterface}
+import scala.collection.immutable.HashMap
 
 object ClientApp {
 
@@ -80,7 +81,7 @@ object ClientApp {
 
     val agent = system.actorOf(Agent.props, "Agent")
     val client = system.actorOf(ClusterClient.props(ClusterClientSettings(system)), "client")
-    agent ! Register(GOOD_LOOKING_QUERY, client)
+    agent ! Register(PolyStoreQuery(HashMap.empty[String, String], ""), client)
 
   }
 

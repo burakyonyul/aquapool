@@ -31,6 +31,8 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-streaming" % "3.2.1" % "provided"
 ).map(_ exclude("org.slf4j", "*"))
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
+libraryDependencies += "org.scala-lang" % "scala-reflect" % "2.12.6"
+
 
 
 

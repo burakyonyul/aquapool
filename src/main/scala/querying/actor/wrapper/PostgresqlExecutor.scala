@@ -1,11 +1,9 @@
 package querying.actor.wrapper
 
 import akka.actor.{Actor, ActorLogging, Props}
-import com.hp.hpl.jena.query.QueryExecutionFactory
 import org.apache.spark.util.SizeEstimator
 import querying.main.MonitoringUtils
-import querying.message.Store._
-import querying.message.{ExecuteQuery, Result}
+import querying.message.ExecuteQuery
 
 object PostgresqlExecutor{
   def props: Props = Props(new PostgresqlExecutor)
@@ -31,7 +29,7 @@ class PostgresqlExecutor extends Actor with ActorLogging {
       log.info("Size of the new result message sent from RdfStoreExecutor to Distributor is: [{}] Bytes, and is [{}]", sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
   }
 
-  protected def executeQuery(query: String, store: Store) = {
+  protected def executeQuery(query: String) = {
 
     //TODO: implement
     None
