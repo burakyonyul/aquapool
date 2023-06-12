@@ -21,7 +21,7 @@ class MetricsListener extends Actor with ActorLogging {
   // Subscribe unto ClusterMetricsEvent events.
   override def preStart(): Unit = extension.subscribe(self)
 
-  // Unsubscribe from ClusterMetricsEvent events.
+  // Unsubscribe start ClusterMetricsEvent events.
   override def postStop(): Unit = extension.unsubscribe(self)
 
   def receive = {

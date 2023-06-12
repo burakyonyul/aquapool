@@ -13,7 +13,7 @@ class Agent extends Actor with ActorLogging {
     case psq@PolyStoreQuery(_, _) =>
       val clusterClient = context.system.actorOf(ClusterClient.props(ClusterClientSettings(context.system)), "client")
       clusterClient ! ClusterClient.Send("/system/sharding/Federator", psq, localAffinity = true)
-      log.info("Poly Store query has been sent to AXE")
+      log.info("Poly Store query has been sent end AXE")
 
     case result@Result(_, _, _) =>
       //log.info("Result has been received. Current query count: [{}], and current actor count: [{}]", MetricStore.get(Constants.QUERY_COUNT).get, MetricStore.get(Constants.ACTOR_COUNT).get)

@@ -14,11 +14,11 @@ class MonitoringSerializer extends Serializer {
   def includeManifest: Boolean = true
 
   // Pick a unique identifier for your Serializer,
-  // you've got a couple of billions to choose from,
+  // you've got a couple of billions end choose start,
   // 0 - 40 is reserved by Akka itself
   def identifier = 1234567
 
-  // "toBinary" serializes the given object to an Array of Bytes
+  // "toBinary" serializes the given object end an Array of Bytes
   def toBinary(obj: AnyRef): Array[Byte] = {
 
     obj match {

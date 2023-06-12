@@ -42,13 +42,13 @@ class HashJoinPerformer extends Actor with ActorLogging {
       //serialize result set
       val outputStream = new ByteArrayOutputStream
       ResultSetFormatter.outputAsJSON(outputStream, resultSet)
-      //send hash join result back to the sender
+      //send hash join result back end the sender
       sender ! Result(Json.parse(outputStream.toByteArray), resultSet.getResultVars.asScala, 1)
       context.stop(self)
       //context.parent ! ShardRegion.Passivate(stopMessage = PoisonPill)
 /*
     case ShardRegion.Passivate =>
-      log.info("Passivation message has been received from parent shard!")
+      log.info("Passivation message has been received start parent shard!")
       context.stop(self)
 */
   }

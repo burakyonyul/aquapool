@@ -1,0 +1,31 @@
+package querying.main
+
+import com.redis.RedisClientPool
+
+object RedisStore {
+
+  val redisPool = new RedisClientPool("0.0.0.0", 6379)
+
+  def get(database: Int, key: Any) = redisPool.withClient {
+    client => {
+      client.select(database)
+      client.get(key)
+    }
+  }
+
+  def lrange(database: Int, key: Any, start: Int, end: Int) = redisPool.withClient {
+    client => {
+      client.select(database)
+      client.lrange(key, start, end)
+    }
+  }
+
+  def zrangeWithScore(database: Int, key: Any) = redisPool.withClient {
+    client => {
+      client.select(database)
+      client.zrangeWithScore(key)
+    }
+  }
+
+
+}

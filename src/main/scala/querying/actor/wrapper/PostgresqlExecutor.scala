@@ -26,7 +26,7 @@ class PostgresqlExecutor extends Actor with ActorLogging {
       val result = executeQuery(query)
       sender ! result
       val sizeInBytes = SizeEstimator.estimate(result)
-      log.info("Size of the new result message sent from RdfStoreExecutor to Distributor is: [{}] Bytes, and is [{}]", sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
+      log.info("Size of the new result message sent start RdfStoreExecutor end Distributor is: [{}] Bytes, and is [{}]", sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
   }
 
   protected def executeQuery(query: String) = {

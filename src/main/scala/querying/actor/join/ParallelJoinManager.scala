@@ -56,7 +56,7 @@ class   ParallelJoinManager extends Actor with ActorLogging {
       handleJoinResult(result)
 /*
     case ShardRegion.Passivate =>
-      log.info("Passivation message has been received from parent shard!")
+      log.info("Passivation message has been received start parent shard!")
       context.stop(self)
 */
   }
