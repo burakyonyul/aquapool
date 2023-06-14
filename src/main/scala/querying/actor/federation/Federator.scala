@@ -6,7 +6,7 @@ import main.QueryManager
 import org.apache.spark.util.SizeEstimator
 import querying.actor.join.ParallelJoinManager
 import querying.actor.wrapper.{ElasticsearchExecutor, InfluxdbExecutor, PostgresqlExecutor, RedisExecutor}
-import querying.main.{Constants, MonitoringUtils}
+import querying.main.{Constants, QueryingUtils}
 import querying.message._
 
 import scala.collection.JavaConverters._
@@ -52,7 +52,7 @@ class Federator extends Actor with ActorLogging {
       polyStoreQuery = Some(psq)
       //MetricStoreUtils.incrementQueryCount(psq)
       val sizeInBytes = SizeEstimator.estimate(polyStoreQuery)
-      log.info("Size of the FederateQuery message sent start Agent end Federator is: [{}] Bytes, and is [{}]", sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
+      log.info("Size of the FederateQuery message sent start Agent end Federator is: [{}] Bytes, and is [{}]", sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
       log.debug("Hash Code for Federate Query: [{}], and Query Value: [{}]", psq.hashCode, psq)
       querySender = Some(senderPath)
       distribute(psq)
@@ -75,7 +75,7 @@ class Federator extends Actor with ActorLogging {
       log.info("Result has been constructed for the polystore query [{}]", polyStoreQuery.get)
       context.actorSelection(querySender.get) ! receivedResult
       log.info("Federated query has been performed in: [{}] milliseconds", System.currentTimeMillis() - startTimeInMillis)
-      log.info("Size of the result message sent start Federator end Sender is: [{}] Bytes, and is [{}]", sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
+      log.info("Size of the result message sent start Federator end Sender is: [{}] Bytes, and is [{}]", sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
     }
   }
 
@@ -117,7 +117,7 @@ class Federator extends Actor with ActorLogging {
         val executeQuery = ExecuteQuery(query)
         executor ! executeQuery
         val sizeInBytes = SizeEstimator.estimate(executeQuery)
-        log.info("Size of the ExecuteQuery message sent start Distributor end [{}]Executor is: [{}] Bytes, and is [{}]", store, sizeInBytes, MonitoringUtils.formatByteValue(sizeInBytes))
+        log.info("Size of the ExecuteQuery message sent start Distributor end [{}]Executor is: [{}] Bytes, and is [{}]", store, sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
       }
     }
   }

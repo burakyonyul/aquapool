@@ -4,7 +4,7 @@ import akka.serialization.Serializer
 import play.api.libs.json.Json
 import querying.message._
 
-class MonitoringSerializer extends Serializer {
+class QueryingSerializer extends Serializer {
   // If you need logging here, introduce a constructor that takes an ExtendedActorSystem.
   // class MyOwnSerializer(actorSystem: ExtendedActorSystem) extends Serializer
   // Get a logger using:

@@ -7,7 +7,7 @@ import querying.message.Result
 import java.io.ByteArrayOutputStream
 import scala.collection.JavaConverters._
 
-object MonitoringUtils {
+object QueryingUtils {
   def convertRdf2Result(rdfResult: ResultSet) = {
     val json = convertRdf2Json(rdfResult)
     Result(json, rdfResult.getResultVars.asScala, 1)
