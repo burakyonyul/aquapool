@@ -1,4 +1,4 @@
-package querying.main
+package querying.main.stores
 
 import com.redis.RedisClientPool
 

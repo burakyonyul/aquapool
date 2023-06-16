@@ -49,7 +49,7 @@ object App {
     var ipAddress = getIpAddress
     var port = "2551"
     if (args.size > 1) {
-      ipAddress = args(0)
+      ipAddress = args.head
       port = args(1)
     }
     if (args.size == 3 && args(2) == CLEAN) {

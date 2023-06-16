@@ -3,9 +3,6 @@ package querying.main
 import com.hp.hpl.jena.rdf.model.{Property, Resource, ResourceFactory}
 
 object Constants {
-  val DIAGNOSE_ICD_QUERY: String = ???
-
-  val PROCEDURE_ICD_QUERY: String = ???
 
 
   val ACTOR_COUNT = "actor-count"
@@ -26,6 +23,8 @@ object Constants {
   val MIMIC_D_ICD_PROCEDURE_CLS: Resource = ResourceFactory.createResource(MIMIC_ONTOLOGY_URI + "D_Icd_Procedure")
   val MIMIC_D_ICD_DIAGNOSE_CLS: Resource = ResourceFactory.createResource(MIMIC_ONTOLOGY_URI + "D_Icd_Diagnose")
   val MIMIC_CAREGIVER_CLS: Resource = ResourceFactory.createResource(MIMIC_ONTOLOGY_URI + "Caregiver")
+  val MIMIC_PROCEDURE_ICD_CLS: Resource = ResourceFactory.createResource(MIMIC_ONTOLOGY_URI + "Procedure_Icd")
+  val MIMIC_DIAGNOSE_ICD_CLS: Resource = ResourceFactory.createResource(MIMIC_ONTOLOGY_URI + "Diagnose_Icd")
 
   val ITEM_ID_PRP: Property = ResourceFactory.createProperty(MIMIC_ONTOLOGY_URI + "itemid")
   val LABEL_PRP: Property = ResourceFactory.createProperty(MIMIC_ONTOLOGY_URI + "label")
@@ -45,6 +44,7 @@ object Constants {
   val CGID_PRP: Property = ResourceFactory.createProperty(MIMIC_ONTOLOGY_URI + "cgid")
   val HADM_ID_PRP: Property = ResourceFactory.createProperty(MIMIC_ONTOLOGY_URI + "hadm_id")
   val SUBJECT_ID_PRP: Property = ResourceFactory.createProperty(MIMIC_ONTOLOGY_URI + "subject_id")
+  val SEQ_NUM: Property = ResourceFactory.createProperty(MIMIC_ONTOLOGY_URI + "seq_num")
 
   val D_ITEM_QUERY: String =
     s"""
@@ -103,5 +103,28 @@ object Constants {
        |?caregiver mimic-ont:label ?label.
        |?caregiver mimic-ont:description ?description.
        |}""".stripMargin
+
+  val PROCEDURE_ICD_QUERY: String =
+    s"""
+       |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
+       |PREFIX mimic-ont:<${MIMIC_ONTOLOGY_URI}>
+       |SELECT * WHERE {
+       |?procedure_icd mimic-ont:subject_id ?subject_id.
+       |?procedure_icd mimic-ont:hadm_id ?hadm_id.
+       |?procedure_icd mimic-ont:seq_num ?seq_num.
+       |?procedure_icd mimic-ont:icd9_code ?icd9_code.
+       |}""".stripMargin
+
+  val DIAGNOSE_ICD_QUERY: String =
+    s"""
+       |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
+       |PREFIX mimic-ont:<${MIMIC_ONTOLOGY_URI}>
+       |SELECT * WHERE {
+       |?diagnose_icd mimic-ont:subject_id ?subject_id.
+       |?diagnose_icd mimic-ont:hadm_id ?hadm_id.
+       |?diagnose_icd mimic-ont:seq_num ?seq_num.
+       |?diagnose_icd mimic-ont:icd9_code ?icd9_code.
+       |}""".stripMargin
+
 
 }

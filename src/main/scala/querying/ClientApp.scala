@@ -68,7 +68,7 @@ object ClientApp {
 
     var ipAddress = getIpAddress
     var port = "2553"
-    if (args.size > 1) {
+    if (args.length > 1) {
       ipAddress = args(0)
       port = args(1)
     }
