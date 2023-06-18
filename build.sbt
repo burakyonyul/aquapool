@@ -29,10 +29,12 @@ libraryDependencies ++= Seq(
   "io.kamon" % "sigar-loader" % "1.6.6-rev002",
   "org.apache.spark" %% "spark-core" % "3.2.1",
   "org.apache.spark" %% "spark-streaming" % "3.2.1" % "provided",
-  "org.postgresql" % "postgresql" % "42.5.1"
+  "org.postgresql" % "postgresql" % "42.5.1",
 ).map(_ exclude("org.slf4j", "*"))
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
 libraryDependencies += "org.scala-lang" % "scala-reflect" % "2.12.6"
+libraryDependencies += "com.zaxxer" % "HikariCP" % "5.0.1"
+
 
 
 

@@ -3,13 +3,19 @@ package querying.actor.wrapper
 import akka.actor.{Actor, ActorLogging, Props}
 import org.apache.spark.util.SizeEstimator
 import querying.main.QueryingUtils
-import querying.message.ExecuteQuery
+import querying.main.stores.PostgresqlStore
+import querying.message.{ExecuteQuery, Result}
+import querying.transformation.PostgresqlTransformer
 
-object PostgresqlExecutor{
+import java.sql.{Connection, ResultSet}
+
+object PostgresqlExecutor {
   def props: Props = Props(new PostgresqlExecutor)
 }
 
 class PostgresqlExecutor extends Actor with ActorLogging {
+
+  val conn: Connection = PostgresqlStore.hikariDataSource.getConnection
 
   override def preStart(): Unit = {
     super.preStart
@@ -30,9 +36,15 @@ class PostgresqlExecutor extends Actor with ActorLogging {
   }
 
   protected def executeQuery(query: String) = {
-
-    //TODO: implement
-    None
+    var result = None
+    try {
+      val stm = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)
+      val rs: ResultSet = stm.executeQuery(query)
+      result = PostgresqlTransformer.transformToRdfResult(rs)
+    } finally {
+      conn.close()
+    }
+    result
   }
 
 }
