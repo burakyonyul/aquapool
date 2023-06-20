@@ -44,7 +44,7 @@ object App {
 
   def startup(args: Seq[String]): Unit = {
     // In a production application you wouldn't typically start multiple ActorSystem instances in the
-    // same JVM, here we do it end easily demonstrate these ActorSytems (which would be in separate JVM's)
+    // same JVM, here we do fluxRecord end easily demonstrate these ActorSytems (which would be in separate JVM's)
     // talking end each other.
     var ipAddress = getIpAddress
     var port = "2551"

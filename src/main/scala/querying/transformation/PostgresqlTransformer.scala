@@ -28,12 +28,6 @@ object PostgresqlTransformer {
     }
 
     columns = Seq.empty[String]
-    val sparqlPrefix =
-      s"""
-         |PREFIX mimic-rsc:<${Constants.MIMIC_RESOURCE_URI}>
-         |PREFIX mimic-ont:<${Constants.MIMIC_ONTOLOGY_URI}>
-         |SELECT * WHERE {
-         |""".stripMargin
 
     var sparqlBody = ""
 
@@ -46,9 +40,8 @@ object PostgresqlTransformer {
            |""".stripMargin
     }
 
-    val sparqlPostfix = "}"
 
-    val sparqlQuery = sparqlPrefix + sparqlBody + sparqlPostfix
+    val sparqlQuery = Constants.GENERIC_SPARQL_PREFIX + sparqlBody + Constants.CLOSE_CURLY_BRACE
     //println(sparqlQuery)
     val result = QueryingUtils.convertRdf2Result(QueryExecutionFactory.create(sparqlQuery, model).execSelect())
     Option(result)

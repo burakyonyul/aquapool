@@ -126,5 +126,12 @@ object Constants {
        |?diagnose_icd mimic-ont:icd9_code ?icd9_code.
        |}""".stripMargin
 
+  val GENERIC_SPARQL_PREFIX: String =
+    s"""
+       |PREFIX mimic-rsc:<${Constants.MIMIC_RESOURCE_URI}>
+       |PREFIX mimic-ont:<${Constants.MIMIC_ONTOLOGY_URI}>
+       |SELECT * WHERE {
+       |""".stripMargin
 
+  val CLOSE_CURLY_BRACE = "}"
 }
