@@ -1,5 +1,6 @@
 package test
 
+import com.hp.hpl.jena.query.ResultSetFormatter
 import com.sksamuel.elastic4s.ElasticDsl.search
 import com.sksamuel.elastic4s.{RequestFailure, RequestSuccess}
 import com.sksamuel.elastic4s.requests.searches.SearchResponse
@@ -13,17 +14,21 @@ object ElasticsearchTransformationTest extends App {
   val query =
     s"""
        |{
-       |  "query": {
        |    "bool" : {
        |      "must" : [
-       |        { "match" : { "hadm_id": "163230" } },
-       |        { "match" : { "subject_id": "69047" },
-       |        { "match" : { "category": "Nursing" } ,
-       |        { "match" : { "cgid": "20816" } ,
-       |        { "match" : { "charttime": "2192-01-12 15:03:00" }  }
+       |        { "term" : { "hadm_id": "163230" } },
+       |        { "term" : { "subject_id": "69047" } },
+       |        { "term" : { "category": "Nursing" } },
+       |        { "term" : { "cgid": "20816" } },
+       |        { "term" : { "charttime": "2192-01-12 15:03:00" }  },
+       |        {
+       |            "query_string": {
+       |              "query": "lamincetomies",
+       |              "default_field": "text"
+       |            }
+       |        }
        |      ]
        |    }
-       |  }
        |}
        |""".stripMargin
   val resp = ElasticsearchStore.client.execute {
@@ -36,5 +41,7 @@ object ElasticsearchTransformationTest extends App {
       result = ElasticsearchTransformer.transformToRdfResult(results)
     case results: RequestSuccess[_] => println(results.result)
   }
-  println(result)
+  val rdfResultSet = result.get.toResultSet
+  ResultSetFormatter.out(rdfResultSet)
+  ElasticsearchStore.client.close()
 }

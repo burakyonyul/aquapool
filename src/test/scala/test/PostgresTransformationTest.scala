@@ -9,7 +9,11 @@ object PostgresTransformationTest extends App {
 
   private val conn: Connection = PostgresqlStore.hikariDataSource.getConnection
   //queryPostgresqlAsRDF("SELECT * FROM mimiciii.patients LIMIT 10")
-  queryPostgresqlAsRDF("SELECT a.*, p.* from mimiciii.admissions a INNER JOIN mimiciii.patients p ON a.subject_id=p.subject_id WHERE a.subject_id=100")
+  queryPostgresqlAsRDF(
+    s"""
+       |SELECT a.*, p.* from mimiciii.admissions a INNER JOIN mimiciii.patients p ON a.subject_id=p.subject_id
+       |WHERE a.subject_id=100
+       |""".stripMargin)
 
   private def queryPostgresqlAsRDF(sqlQuery: String) = {
     try {

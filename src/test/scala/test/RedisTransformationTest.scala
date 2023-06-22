@@ -7,7 +7,7 @@ import querying.transformation.RedisTransformer
 object RedisTransformationTest extends App {
 
 
-  //queryRedisAsRDF(0, "6", "110", "lrange")
+  queryRedisAsRDF(0, "6", "110", "lrange")
   //queryRedisAsRDF(1, "50817", "50823", "lrange")
   //queryRedisAsRDF(2, "016", "0139", "lrange")
   //queryRedisAsRDF(3, "01105", "0479", "lrange")
