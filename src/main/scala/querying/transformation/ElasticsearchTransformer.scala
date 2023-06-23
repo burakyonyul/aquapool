@@ -22,7 +22,7 @@ object ElasticsearchTransformer {
       while (keysIterator.hasNext) {
         val key = keysIterator.next()
         val keyPrp = ResourceFactory.createProperty(Constants.MIMIC_ONTOLOGY_URI, key)
-        val fieldValue = if (searchMap.get(key) == null) "" else searchMap.get(key)
+        val fieldValue = if (searchMap(key) == null) "" else searchMap(key)
         model.add(noteeventRsc, keyPrp, fieldValue.toString)
         sparqlBody +=
           s"""
