@@ -16,7 +16,7 @@ object App {
 
   def main(args: Array[String]): Unit = {
     if (args.isEmpty) {
-      startup(Seq("127.0.0.1", "2552"))
+      startup(Seq("127.0.0.1", "2551"))
     }
     else {
       startup(args)
@@ -61,7 +61,7 @@ object App {
       withFallback(ConfigFactory.load())
 
     // Create an Akka system
-    val system = ActorSystem("Monitoring", config)
+    val system = ActorSystem("Querying", config)
     // Create an actor that starts the sharding and sends random messages
 
     ClusterMetricsExtension(system).subscribe(system.actorOf(MetricsListener.props))
@@ -74,6 +74,8 @@ object App {
       extractShardId = Federator.extractShardId)
 
     ClusterClientReceptionist(system).registerService(federatorRegion)
+    system.log.info("Polystore system has been started.")
+    //println("Polystore system has been started.")
 
     /*
     ClusterSharding(system).start(

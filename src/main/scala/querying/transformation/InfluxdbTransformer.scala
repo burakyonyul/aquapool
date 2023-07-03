@@ -15,13 +15,16 @@ class InfluxdbTransformer {
 
   def generateMeasurementResource(fluxRecord: FluxRecord): Unit = {
     val fieldValues = fluxRecord.getValues.keySet()
+    //println(fieldValues)
     val fieldIter = fieldValues.iterator()
     val measurementName = fluxRecord.getMeasurement
     val measurementRsc = ResourceFactory.createResource(s"${Constants.MIMIC_RESOURCE_URI}$measurementName/${UUID.randomUUID()}")
     while (fieldIter.hasNext) {
       val fieldKey = fieldIter.next()
       val fieldPrp = ResourceFactory.createProperty(Constants.MIMIC_ONTOLOGY_URI, fieldKey)
-      model.add(measurementRsc, fieldPrp, fluxRecord.getValueByKey(fieldKey).toString)
+      //println(fluxRecord.getValueByKey(fieldKey))
+      val value = if (fluxRecord.getValueByKey(fieldKey) != null) fluxRecord.getValueByKey(fieldKey).toString else ""
+      model.add(measurementRsc, fieldPrp, value)
       sparqlBody +=
         s"""
            |?s mimic-ont:$fieldKey ?$fieldKey.

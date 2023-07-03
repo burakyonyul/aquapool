@@ -27,7 +27,6 @@ libraryDependencies ++= Seq(
   "org.apache.jena" % "jena-core" % jenaVersion,
   "com.typesafe.play" %% "play-json" % jsonVersion,
   "net.debasishg" %% "redisclient" % "3.7",
-  "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
   "io.kamon" % "sigar-loader" % "1.6.6-rev002",
   "org.apache.spark" %% "spark-core" % "3.2.1",
   "org.apache.spark" %% "spark-sql" % "3.3.0",
@@ -39,15 +38,14 @@ libraryDependencies ++= Seq(
   "org.elasticsearch" %% "elasticsearch-spark-30" % "8.5.3",
   "com.sksamuel.elastic4s" %% "elastic4s-client-esjava" % elastic4sVersion,
   "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion,
-  "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % "test"
+  "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % "test",
+  "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+  "org.scala-lang" % "scala-reflect" % "2.12.6",
+  "com.zaxxer" % "HikariCP" % "5.0.1",
+  "io.aeron" % "aeron-driver" % "1.40.0",
+  "io.aeron" % "aeron-client" % "1.40.0"
 ).map(_ exclude("org.slf4j", "*"))
-libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
-libraryDependencies += "org.scala-lang" % "scala-reflect" % "2.12.6"
-libraryDependencies += "com.zaxxer" % "HikariCP" % "5.0.1"
-
-
-
-
+libraryDependencies+="ch.qos.logback" % "logback-classic" % "1.2.11"
 
 //libraryDependencies ++= Seq(
 //  "com.typesafe.akka" %% "akka-persistence-cassandra" % "0.103",

@@ -2,13 +2,9 @@ package querying.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
 import akka.cluster.Cluster
-import akka.cluster.metrics.ClusterMetricsEvent
-import akka.cluster.metrics.ClusterMetricsChanged
 import akka.cluster.ClusterEvent.CurrentClusterState
-import akka.cluster.metrics.NodeMetrics
-import akka.cluster.metrics.StandardMetrics.HeapMemory
-import akka.cluster.metrics.StandardMetrics.Cpu
-import akka.cluster.metrics.ClusterMetricsExtension
+import akka.cluster.metrics.{ClusterMetricsChanged, ClusterMetricsExtension, NodeMetrics}
+import akka.cluster.metrics.StandardMetrics.{Cpu, HeapMemory}
 
 object MetricsListener {
   def props: Props = Props(new MetricsListener)
@@ -35,13 +31,13 @@ class MetricsListener extends Actor with ActorLogging {
 
   def logHeap(nodeMetrics: NodeMetrics): Unit = nodeMetrics match {
     case HeapMemory(address, timestamp, used, committed, max) =>
-      log.info("Used heap: {} MB (max: {})", used.doubleValue / 1024 / 1024, max.get.doubleValue / 1024 / 1024)
+      log.debug("Used heap: {} MB (max: {})", used.doubleValue / 1024 / 1024, max.get.doubleValue / 1024 / 1024)
     case _ => // No heap info.
   }
 
   def logCpu(nodeMetrics: NodeMetrics): Unit = nodeMetrics match {
     case Cpu(address, timestamp, Some(systemLoadAverage), cpuCombined, cpuStolen, processors) =>
-      log.info("Load: {} ({} processors)", systemLoadAverage, processors)
+      log.debug("Load: {} ({} processors)", systemLoadAverage, processors)
     case _ => // No cpu info.
   }
 }

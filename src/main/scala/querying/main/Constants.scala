@@ -10,10 +10,10 @@ object Constants {
   val Kilobytes = 1024L
   val Megabytes: Long = Kilobytes * 1024L
   val Gigabytes: Long = Megabytes * 1024L
-  val REDIS = "Redis"
-  val POSTGRESQL = "Postgresql"
-  val INFLUXDB = "Influxdb"
-  val ELASTICSEARCH = "Elasticsearch"
+  val REDIS: String = "Redis"
+  val POSTGRESQL: String = "Postgresql"
+  val INFLUXDB: String = "Influxdb"
+  val ELASTICSEARCH: String = "Elasticsearch"
   val MIMIC_BASE_URI = "https://mimic.mit.edu/"
   val MIMIC_ONTOLOGY_URI: String = MIMIC_BASE_URI + "ontology/"
   val MIMIC_RESOURCE_URI: String = MIMIC_BASE_URI + "resource/"
@@ -62,6 +62,15 @@ object Constants {
        |?d_item mimic-ont:conceptid ?conceptid.
        |}""".stripMargin
 
+  val D_ITEM_KEY_QUERY: String =
+    s"""
+       |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
+       |PREFIX mimic-ont:<${MIMIC_ONTOLOGY_URI}>
+       |SELECT * WHERE {
+       |?d_item mimic-ont:itemid ?itemid.
+       |?d_item mimic-ont:label ?label.
+       |}""".stripMargin
+
   val D_LAB_ITEM_QUERY: String =
     s"""
        |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
@@ -74,6 +83,15 @@ object Constants {
        |?d_lab_item mimic-ont:loinc_code ?loinc_code.
        |}""".stripMargin
 
+  val D_LAB_ITEM_KEY_QUERY: String =
+    s"""
+       |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
+       |PREFIX mimic-ont:<${MIMIC_ONTOLOGY_URI}>
+       |SELECT * WHERE {
+       |?d_lab_item mimic-ont:itemid ?itemid.
+       |?d_lab_item mimic-ont:label ?label.
+       |}""".stripMargin
+
   val D_ICD_PROCEDURE_QUERY: String =
     s"""
        |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
@@ -84,6 +102,15 @@ object Constants {
        |?d_icd_procedure mimic-ont:long_title ?long_title.
        |}""".stripMargin
 
+  val D_ICD_PROCEDURE_KEY_QUERY: String =
+    s"""
+       |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
+       |PREFIX mimic-ont:<${MIMIC_ONTOLOGY_URI}>
+       |SELECT * WHERE {
+       |?d_icd_procedure mimic-ont:icd9_code ?icd9_code.
+       |?d_icd_procedure mimic-ont:long_title ?long_title.
+       |}""".stripMargin
+
   val D_ICD_DIAGNOSE_QUERY: String =
     s"""
        |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
@@ -91,6 +118,15 @@ object Constants {
        |SELECT * WHERE {
        |?d_icd_diagnose mimic-ont:icd9_code ?icd9_code.
        |?d_icd_diagnose mimic-ont:short_title ?short_title.
+       |?d_icd_diagnose mimic-ont:long_title ?long_title.
+       |}""".stripMargin
+
+  val D_ICD_DIAGNOSE_KEY_QUERY: String =
+    s"""
+       |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
+       |PREFIX mimic-ont:<${MIMIC_ONTOLOGY_URI}>
+       |SELECT * WHERE {
+       |?d_icd_diagnose mimic-ont:icd9_code ?icd9_code.
        |?d_icd_diagnose mimic-ont:long_title ?long_title.
        |}""".stripMargin
 

@@ -54,7 +54,7 @@ class Federator extends Actor with ActorLogging {
       val sizeInBytes = SizeEstimator.estimate(polyStoreQuery)
       log.info("Size of the FederateQuery message sent start Agent end Federator is: [{}] Bytes, and is [{}]", sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
       log.debug("Hash Code for Federate Query: [{}], and Query Value: [{}]", psq.hashCode, psq)
-      querySender = Some(senderPath)
+      querySender = Some(sender().path.toStringWithoutAddress)
       distribute(psq)
     case receivedResult@Result(_, _, _) =>
       // get hash join performer region

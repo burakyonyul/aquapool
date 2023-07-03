@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <logger level="info" />
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${user.home}/log/axe.log</file>
-        <immediateFlush>false</immediateFlush>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>axe_%d{yyyy-MM-dd}.log</fileNamePattern>
-        </rollingPolicy>
-        <encoder>
-            <pattern>[%date{ISO8601}] [%level] [%logger] [%marker] [%thread] - %msg MDC: {%mdc}%n</pattern>
-        </encoder>
-    </appender>
+<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+        <level>INFO</level>
+    </filter>
+    <encoder>
+        <pattern>[%date{ISO8601}] [%level] [%logger] [%marker] [%thread] - %msg MDC: {%mdc}%n</pattern>
+    </encoder>
+</appender>
 
-    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
-        <queueSize>8192</queueSize>
-        <neverBlock>true</neverBlock>
-        <appender-ref ref="FILE" />
-    </appender>
+<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${user.home}/log/axe.log</file>
+    <encoder>
+        <pattern>[%date{ISO8601}] [%level] [%logger] [%marker] [%thread] - %msg MDC: {%mdc}%n</pattern>
+    </encoder>
+</appender>
 
-    <root level="INFO">
-        <appender-ref ref="ASYNC"/>
-    </root>
+<root level="DEBUG">
+    <appender-ref ref="STDOUT"/>
+    <appender-ref ref="FILE"/>
+</root>
 </configuration>

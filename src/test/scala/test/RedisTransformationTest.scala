@@ -7,7 +7,31 @@ import querying.transformation.RedisTransformer
 object RedisTransformationTest extends App {
 
 
-  queryRedisAsRDF(0, "6", "110", "lrange")
+  //regexMatchCommands()
+
+  private def regexMatchCommands() = {
+    val text = "[database] [operation_name] [{key1}, {key2}, {key3}, ...]"
+    val regex1 = "(?<=\\[)(.*?)(?=\\])".r
+    val matchList: List[String] = regex1.findAllIn(text).toList
+    val firstMatch: String = matchList.head
+    val secondMatch: String = matchList(1)
+    val lastMatch: String = matchList.last
+    println(firstMatch)
+    println(secondMatch)
+    println(lastMatch)
+
+    val regex2 = "(?<=\\{)(.*?)(?=\\})".r
+    val subMatchList: List[String] = regex2.findAllIn(lastMatch).toList
+    for (subMatch <- subMatchList) {
+      println(subMatch)
+    }
+  }
+
+  queryRedisAsRDF(0, "Arterial Blood Pressure*", "Magnesium", "keys")
+  //queryRedisAsRDF(1, "*Glucose*", "*Cholesterol*", "keys")
+  //queryRedisAsRDF(2, "*Blood vessel*", "*alcohol and drug*", "keys")
+  //queryRedisAsRDF(3, "*Cleft lip,*", "*sleep disorders*", "keys")
+  //queryRedisAsRDF(0, "6", "110", "lrange")
   //queryRedisAsRDF(1, "50817", "50823", "lrange")
   //queryRedisAsRDF(2, "016", "0139", "lrange")
   //queryRedisAsRDF(3, "01105", "0479", "lrange")
@@ -19,6 +43,9 @@ object RedisTransformationTest extends App {
     var firstValues: Option[Any] = None
     var secondValues: Option[Any] = None
     command match {
+      case "keys" =>
+        firstValues = RedisStore.keys(database, s"""$firstKey""")
+        secondValues = RedisStore.keys(database, s"""$secondKey""")
       case "lrange" =>
         firstValues = RedisStore.lrange(database, firstKey, 0, 501)
         secondValues = RedisStore.lrange(database, secondKey, 0, 501)
@@ -27,7 +54,7 @@ object RedisTransformationTest extends App {
         secondValues = RedisStore.zrangeWithScore(database, secondKey)
     }
 
-    val rs: ResultSet = RedisTransformer.transformToRdfResult(database, Map(firstKey -> firstValues, secondKey -> secondValues)).get.toResultSet
+    val rs: ResultSet = RedisTransformer.transformToRdfResult(database, command, Map(firstKey -> firstValues, secondKey -> secondValues)).get.toResultSet
     while (rs.hasNext) {
       val solution = rs.next()
       println(solution)

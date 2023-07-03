@@ -3,14 +3,13 @@ package querying
 import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
 import querying.actor.Agent
-import querying.main.OrganizationConstants
+import querying.main.Constants
 import querying.message.PolyStoreQuery
 
-import java.net.{InetAddress, NetworkInterface}
 import scala.collection.immutable.HashMap
 
 /**
- * TODO: Polystore use cases need end be generated
+ * TODO: Polystore use cases need to be generated
  */
 object AgentApp {
 
@@ -20,43 +19,33 @@ object AgentApp {
 
     val ipAddress = if (args.isDefinedAt(0)) args(0) else getIpAddress
     val port = if (args.isDefinedAt(1)) args(1) else "2553"
-    val query_count = if (args.isDefinedAt(2)) args(2).toInt else 5000
-    val bunch_percent = if (args.isDefinedAt(3)) args(3).toDouble else 0.1D
-    val query_selectivity = if (args.isDefinedAt(4)) args(4) else "HIGH"
-    val selectionDbpedia = if (args.isDefinedAt(5)) args(5) else "ALL"
-    val selectionNytimes = if (args.isDefinedAt(6)) args(6) else "ALL"
-    val selectionStock = if (args.isDefinedAt(7)) args(7) else "ALL"
-    val config = ConfigFactory.parseString("akka.remote.artery.canonical.hostname = " + ipAddress).
-      withFallback(ConfigFactory.parseString("akka.remote.artery.canonical.port = " + port)).
+    val config = ConfigFactory.parseString(s"akka.remote.artery.canonical.hostname = $ipAddress").
+      withFallback(ConfigFactory.parseString(s"akka.remote.artery.canonical.port = $port")).
       withFallback(ConfigFactory.load("agent.conf"))
 
     // Create an Akka system
-    val system = ActorSystem("Polystore", config)
-    val bunch_count = (query_count * bunch_percent).toInt
-    for (index <- 1 to query_count) {
-      val agent = system.actorOf(Agent.props, "Agent-" + index)
+    val system = ActorSystem("ClientQuerier", config)
 
-      val federatedQuery = query_selectivity match {
-        case "MOST" => OrganizationConstants.generateMostSelectiveFederatedQuery(index, selectionDbpedia, selectionNytimes, selectionStock)
-        case "HIGH" => OrganizationConstants.generateHighSelectiveFederatedQuery(index, selectionDbpedia, selectionNytimes, selectionStock)
-        case "MID" => OrganizationConstants.generateMidSelectiveFederatedQuery(index, selectionDbpedia, selectionNytimes, selectionStock)
-        case "LOW" => OrganizationConstants.generateLowSelectiveFederatedQuery(index, selectionDbpedia, selectionNytimes, selectionStock)
-        case "LEAST" => OrganizationConstants.generateLeastSelectiveFederatedQuery(index)
-      }
+    val agent = system.actorOf(Agent.props, "QuerierClient-1")
 
-      //val federatedQuery = String.format(OrganizationConstants.FEDERATED_STOCK_QUERY_TEMPLATE,DBPEDIA_COMPANY_RESOURCE_URI_TEMPLATE+index)
-      //TODO: fix the query generation
-      agent ! PolyStoreQuery(HashMap.empty[String, String], "")
-      if (index % (bunch_count) == 0) {
-        //println("Index: "+index + ", bunch count: "+ bunch_count + ", Query count: "+MetricStore.get(Constants.QUERY_COUNT).get + ", Actor count: "+MetricStore.get(Constants.ACTOR_COUNT).get)
-        Thread.sleep(60000)
-      }
-    }
-
+    val influxQuery =
+      s"""
+         |from(bucket: "mimic-iii")
+         ||> range(start:2000-01-01, stop:2012-12-31)
+         ||> filter(fn: (r) => r["_measurement"] == "chart_event")
+         ||> filter(fn: (r) => r["itemid"] == "1532")
+         ||> filter(fn: (r) => r["subject_id"] == "21")
+         ||> filter(fn: (r) => r["_field"] == "value" or r["_field"] == "icustay_id" or r["_field"] == "hadm_id")
+         ||> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+         |""".stripMargin
+    val redisQuery = "[0] [lrange] [{1532}]"
+    val queryMap = HashMap(redisQuery -> Constants.REDIS, influxQuery -> Constants.INFLUXDB)
+    agent ! PolyStoreQuery(queryMap, "")
 
   }
 
   private def getIpAddress: String = {
+    /*
     val e = NetworkInterface.getNetworkInterfaces
     if (e.hasMoreElements) {
       val n = e.nextElement match {
@@ -71,6 +60,7 @@ object AgentApp {
         }
       }
     }
-    return "127.0.0.1"
+     */
+    "127.0.0.1"
   }
 }

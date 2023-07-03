@@ -27,5 +27,12 @@ object RedisStore {
     }
   }
 
+  def keys(database: Int, keyPattern: Any) = redisPool.withClient {
+    client => {
+      client.select(database)
+      client.keys(keyPattern)
+    }
+  }
+
 
 }

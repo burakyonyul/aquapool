@@ -11,8 +11,7 @@ object PostgresTransformationTest extends App {
   //queryPostgresqlAsRDF("SELECT * FROM mimiciii.patients LIMIT 10")
   queryPostgresqlAsRDF(
     s"""
-       |SELECT a.*, p.* from mimiciii.admissions a INNER JOIN mimiciii.patients p ON a.subject_id=p.subject_id
-       |WHERE a.subject_id=100
+       |select * from mimiciii.chartevents where  itemid=1532 and subject_id=21
        |""".stripMargin)
 
   private def queryPostgresqlAsRDF(sqlQuery: String) = {

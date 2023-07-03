@@ -3,6 +3,7 @@ package querying.transformation
 import com.hp.hpl.jena.query.QueryExecutionFactory
 import com.hp.hpl.jena.rdf.model.{Model, ModelFactory, ResourceFactory}
 import com.hp.hpl.jena.vocabulary.RDF
+import querying.main.stores.RedisStore
 import querying.main.{Constants, QueryingUtils}
 import querying.message.Result
 
@@ -29,6 +30,24 @@ object RedisTransformer {
 
 
   /**
+   * LABEL --> [ITEMID]
+   */
+  private def create_ontology_for_d_item_id(model: Model, key: String, redisResult: Option[Any]) = {
+    val propertyValueList = redisResult.asInstanceOf[Option[List[Option[String]]]]
+    for (labelValue <- propertyValueList.get) {
+      val itemIdList = RedisStore.lrange(0, labelValue.get, 0, 501).get
+      for (itemId <- itemIdList) {
+        val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "d_item/" + itemId.get)
+        model.add(itemRsc, Constants.ITEM_ID_PRP, itemId.get)
+        model.add(itemRsc, Constants.LABEL_PRP, labelValue.get)
+        model.add(itemRsc, RDF.`type`, Constants.MIMIC_D_ITEM_CLS)
+      }
+    }
+
+  }
+
+
+  /**
    * ITEMID --> [LABEL, FLUID, CATEGORY, LOINC_CODE]
    */
   private def create_ontology_for_d_lab_item(model: Model, key: String, redisResult: Option[Any]) = {
@@ -40,6 +59,23 @@ object RedisTransformer {
     model.add(itemRsc, Constants.CATEGORY_PRP, propertyValueList.get(2).get)
     model.add(itemRsc, Constants.LOINC_CODE_PRP, propertyValueList.get(3).get)
     model.add(itemRsc, RDF.`type`, Constants.MIMIC_D_LAB_ITEM_CLS)
+  }
+
+  /**
+   * LABEL --> [ITEMID]
+   */
+  private def create_ontology_for_d_lab_item_id(model: Model, key: String, redisResult: Option[Any]) = {
+    val propertyValueList = redisResult.asInstanceOf[Option[List[Option[String]]]]
+    for (labelValue <- propertyValueList.get) {
+      val itemIdList = RedisStore.lrange(1, labelValue.get, 0, 501).get
+      for (itemId <- itemIdList) {
+        val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "d_lab_item/" + itemId.get)
+        model.add(itemRsc, Constants.ITEM_ID_PRP, itemId.get)
+        model.add(itemRsc, Constants.LABEL_PRP, labelValue.get)
+        model.add(itemRsc, RDF.`type`, Constants.MIMIC_D_LAB_ITEM_CLS)
+      }
+    }
+
   }
 
 
@@ -56,6 +92,23 @@ object RedisTransformer {
   }
 
   /**
+   * LONG_TITLE --> [ICD9_CODE]
+   */
+  private def create_ontology_for_d_icd_procedures_id(model: Model, key: String, redisResult: Option[Any]) = {
+    val propertyValueList = redisResult.asInstanceOf[Option[List[Option[String]]]]
+    for (labelValue <- propertyValueList.get) {
+      val itemIdList = RedisStore.lrange(2, labelValue.get, 0, 501).get
+      for (itemId <- itemIdList) {
+        val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "d_icd_procedure/" + itemId.get)
+        model.add(itemRsc, Constants.ICD_9_CODE_PRP, itemId.get)
+        model.add(itemRsc, Constants.LONG_TITLE_PRP, labelValue.get)
+        model.add(itemRsc, RDF.`type`, Constants.MIMIC_D_ICD_PROCEDURE_CLS)
+      }
+    }
+
+  }
+
+  /**
    * ICD9_CODE --> [SHORT_TITLE,	LONG_TITLE]
    */
   private def create_ontology_for_d_icd_diagnoses(model: Model, key: String, redisResult: Option[Any]) = {
@@ -65,6 +118,22 @@ object RedisTransformer {
     model.add(itemRsc, Constants.SHORT_TITLE_PRP, propertyValueList.get.head.get)
     model.add(itemRsc, Constants.LONG_TITLE_PRP, propertyValueList.get(1).get)
     model.add(itemRsc, RDF.`type`, Constants.MIMIC_D_ICD_DIAGNOSE_CLS)
+  }
+
+  /**
+   * LONG_TITLE --> [ICD9_CODE]
+   */
+  private def create_ontology_for_d_icd_diagnoses_id(model: Model, key: String, redisResult: Option[Any]) = {
+    val propertyValueList = redisResult.asInstanceOf[Option[List[Option[String]]]]
+    for (labelValue <- propertyValueList.get) {
+      val itemIdList = RedisStore.lrange(3, labelValue.get, 0, 501).get
+      for (itemId <- itemIdList) {
+        val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "d_icd_diagnose/" + itemId.get)
+        model.add(itemRsc, Constants.ICD_9_CODE_PRP, itemId.get)
+        model.add(itemRsc, Constants.LONG_TITLE_PRP, labelValue.get)
+        model.add(itemRsc, RDF.`type`, Constants.MIMIC_D_ICD_DIAGNOSE_CLS)
+      }
+    }
   }
 
   /**
@@ -85,7 +154,7 @@ object RedisTransformer {
   private def create_ontology_for_procedures_icd(model: Model, compoundKey: String, redisResult: Option[Any]) = {
     val propertyValueList = redisResult.asInstanceOf[Option[List[(String, Double)]]]
     for (propertyValue <- propertyValueList.get) {
-      val ICD9Code = propertyValue._1
+      val ICD9Code = propertyValue._1.split(":")(1)
       val sequenceNumber = propertyValue._2.toString
       val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "procedure_icd/" + compoundKey + "-" + sequenceNumber)
       val subKeys = compoundKey.split("-")
@@ -100,7 +169,7 @@ object RedisTransformer {
   private def create_ontology_for_diagnoses_icd(model: Model, compoundKey: String, redisResult: Option[Any]) = {
     val propertyValueList = redisResult.asInstanceOf[Option[List[(String, Double)]]]
     for (propertyValue <- propertyValueList.get) {
-      val ICD9Code = propertyValue._1
+      val ICD9Code = propertyValue._1.split(":")(1)
       val sequenceNumber = propertyValue._2.toString
       val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "diagnose_icd/" + compoundKey + "-" + sequenceNumber)
       val subKeys = compoundKey.split("-")
@@ -112,24 +181,46 @@ object RedisTransformer {
     }
   }
 
-  def transformToRdfResult(database: Int, resultMap: Map[String, Option[Any]]): Option[Result] = {
+  private val KEYS = "keys"
+
+  def transformToRdfResult(database: Int, operation: String, resultMap: Map[String, Option[Any]]): Option[Result] = {
     var query: String = ""
 
     val model = ModelFactory.createDefaultModel()
     for ((key, redisResult) <- resultMap) {
       database match {
         case 0 =>
-          create_ontology_for_d_item(model, key, redisResult)
-          query = Constants.D_ITEM_QUERY
+          if (operation.equals(KEYS)) {
+            create_ontology_for_d_item_id(model, key, redisResult)
+            query = Constants.D_ITEM_KEY_QUERY
+          } else {
+            create_ontology_for_d_item(model, key, redisResult)
+            query = Constants.D_ITEM_QUERY
+          }
         case 1 =>
-          create_ontology_for_d_lab_item(model, key, redisResult)
-          query = Constants.D_LAB_ITEM_QUERY
+          if (operation.equals(KEYS)) {
+            create_ontology_for_d_lab_item_id(model, key, redisResult)
+            query = Constants.D_LAB_ITEM_KEY_QUERY
+          } else {
+            create_ontology_for_d_lab_item(model, key, redisResult)
+            query = Constants.D_LAB_ITEM_QUERY
+          }
         case 2 =>
-          create_ontology_for_d_icd_procedures(model, key, redisResult)
-          query = Constants.D_ICD_PROCEDURE_QUERY
+          if (operation.equals(KEYS)) {
+            create_ontology_for_d_icd_procedures_id(model, key, redisResult)
+            query = Constants.D_ICD_PROCEDURE_KEY_QUERY
+          } else {
+            create_ontology_for_d_icd_procedures(model, key, redisResult)
+            query = Constants.D_ICD_PROCEDURE_QUERY
+          }
         case 3 =>
-          create_ontology_for_d_icd_diagnoses(model, key, redisResult)
-          query = Constants.D_ICD_DIAGNOSE_QUERY
+          if (operation.equals(KEYS)) {
+            create_ontology_for_d_icd_diagnoses_id(model, key, redisResult)
+            query = Constants.D_ICD_DIAGNOSE_KEY_QUERY
+          } else {
+            create_ontology_for_d_icd_diagnoses(model, key, redisResult)
+            query = Constants.D_ICD_DIAGNOSE_QUERY
+          }
         case 4 =>
           create_ontology_for_caregivers(model, key, redisResult)
           query = Constants.CAREGIVER_QUERY
@@ -145,6 +236,6 @@ object RedisTransformer {
     val result = QueryingUtils.convertRdf2Result(QueryExecutionFactory.create(query, model).execSelect())
     Option(result)
 
-
   }
+
 }
