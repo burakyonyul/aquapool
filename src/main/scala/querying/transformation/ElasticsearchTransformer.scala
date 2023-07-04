@@ -16,7 +16,7 @@ object ElasticsearchTransformer {
     searchHits.foreach { searchHit =>
       sparqlBody = ""
       val id = searchHit.id
-      val noteeventRsc = ResourceFactory.createResource(s"{${Constants.MIMIC_RESOURCE_URI}noteevent/{$id}}")
+      val noteeventRsc = ResourceFactory.createResource(s"${Constants.MIMIC_RESOURCE_URI}noteevent/$id")
       val searchMap = searchHit.sourceAsMap
       val keysIterator = searchMap.keysIterator
       while (keysIterator.hasNext) {

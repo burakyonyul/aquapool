@@ -29,7 +29,8 @@ object ElasticsearchTransformationTest extends App {
        |        }
        |      ]
        |    }
-       |}
+       |},
+       |"size":30
        |""".stripMargin
   val resp = ElasticsearchStore.client.execute {
     search("noteevents").rawQuery(query)
