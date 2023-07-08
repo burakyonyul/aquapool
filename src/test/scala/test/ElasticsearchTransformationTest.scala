@@ -16,11 +16,8 @@ object ElasticsearchTransformationTest extends App {
        |{
        |    "bool" : {
        |      "must" : [
-       |        { "term" : { "hadm_id": "163230" } },
-       |        { "term" : { "subject_id": "69047" } },
-       |        { "term" : { "category": "Nursing" } },
-       |        { "term" : { "cgid": "20816" } },
-       |        { "term" : { "charttime": "2192-01-12 15:03:00" }  },
+       |        { "term" : { "subject_id": "191" } },
+       |        { "term" : { "category": "Discharge summary" } },
        |        {
        |            "query_string": {
        |              "query": "lamincetomies",

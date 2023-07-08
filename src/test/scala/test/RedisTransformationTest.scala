@@ -27,7 +27,7 @@ object RedisTransformationTest extends App {
     }
   }
 
-  queryRedisAsRDF(0, "Arterial Blood Pressure*", "Magnesium", "keys")
+  //queryRedisAsRDF(0, "Arterial Blood Pressure*", "Magnesium", "keys")
   //queryRedisAsRDF(1, "*Glucose*", "*Cholesterol*", "keys")
   //queryRedisAsRDF(2, "*Blood vessel*", "*alcohol and drug*", "keys")
   //queryRedisAsRDF(3, "*Cleft lip,*", "*sleep disorders*", "keys")
@@ -38,17 +38,23 @@ object RedisTransformationTest extends App {
   //queryRedisAsRDF(4, "14021", "14839", "lrange")
   //queryRedisAsRDF(5, "108-123552", "530-149648", "zrangeWithScore")
   //queryRedisAsRDF(6, "570-100913", "1430-184067", "zrangeWithScore")
+  //queryRedisAsRDF(4, "RN", "UA", "reverselrange")
+  //queryRedisAsRDF(5, "9671", "8872", "reverselrange")
+  //queryRedisAsRDF(6, "V3000", "7793", "reverselrange")
 
   private def queryRedisAsRDF(database: Int, firstKey: String, secondKey: String, command: String) = {
     var firstValues: Option[Any] = None
     var secondValues: Option[Any] = None
     command match {
+      case "reverselrange" =>
+        firstValues = RedisStore.lrange(database, firstKey, 0, -1)
+        secondValues = RedisStore.lrange(database, secondKey, 0, -1)
       case "keys" =>
         firstValues = RedisStore.keys(database, s"""$firstKey""")
         secondValues = RedisStore.keys(database, s"""$secondKey""")
       case "lrange" =>
-        firstValues = RedisStore.lrange(database, firstKey, 0, 501)
-        secondValues = RedisStore.lrange(database, secondKey, 0, 501)
+        firstValues = RedisStore.lrange(database, firstKey, 0, -1)
+        secondValues = RedisStore.lrange(database, secondKey, 0, -1)
       case "zrangeWithScore" =>
         firstValues = RedisStore.zrangeWithScore(database, firstKey)
         secondValues = RedisStore.zrangeWithScore(database, secondKey)
@@ -57,7 +63,7 @@ object RedisTransformationTest extends App {
     val rs: ResultSet = RedisTransformer.transformToRdfResult(database, command, Map(firstKey -> firstValues, secondKey -> secondValues)).get.toResultSet
     while (rs.hasNext) {
       val solution = rs.next()
-      println(solution)
+      println(s"Solution: [$solution] - Row Number: [${rs.getRowNumber}]")
     }
   }
 

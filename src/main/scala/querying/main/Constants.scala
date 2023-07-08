@@ -62,7 +62,7 @@ object Constants {
        |?d_item mimic-ont:conceptid ?conceptid.
        |}""".stripMargin
 
-  val D_ITEM_KEY_QUERY: String =
+  val D_ITEM_REVERSE_QUERY: String =
     s"""
        |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
        |PREFIX mimic-ont:<${MIMIC_ONTOLOGY_URI}>
@@ -83,7 +83,7 @@ object Constants {
        |?d_lab_item mimic-ont:loinc_code ?loinc_code.
        |}""".stripMargin
 
-  val D_LAB_ITEM_KEY_QUERY: String =
+  val D_LAB_ITEM_REVERSE_QUERY: String =
     s"""
        |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
        |PREFIX mimic-ont:<${MIMIC_ONTOLOGY_URI}>
@@ -102,7 +102,7 @@ object Constants {
        |?d_icd_procedure mimic-ont:long_title ?long_title.
        |}""".stripMargin
 
-  val D_ICD_PROCEDURE_KEY_QUERY: String =
+  val D_ICD_PROCEDURE_REVERSE_QUERY: String =
     s"""
        |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
        |PREFIX mimic-ont:<${MIMIC_ONTOLOGY_URI}>
@@ -121,7 +121,7 @@ object Constants {
        |?d_icd_diagnose mimic-ont:long_title ?long_title.
        |}""".stripMargin
 
-  val D_ICD_DIAGNOSE_KEY_QUERY: String =
+  val D_ICD_DIAGNOSE_REVERSE_QUERY: String =
     s"""
        |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
        |PREFIX mimic-ont:<${MIMIC_ONTOLOGY_URI}>
@@ -140,6 +140,15 @@ object Constants {
        |?caregiver mimic-ont:description ?description.
        |}""".stripMargin
 
+  val CAREGIVER_REVERSE_QUERY: String =
+    s"""
+       |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
+       |PREFIX mimic-ont:<${MIMIC_ONTOLOGY_URI}>
+       |SELECT * WHERE {
+       |?caregiver mimic-ont:cgid ?cgid.
+       |?caregiver mimic-ont:label ?label.
+       |}""".stripMargin
+
   val PROCEDURE_ICD_QUERY: String =
     s"""
        |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
@@ -151,6 +160,16 @@ object Constants {
        |?procedure_icd mimic-ont:icd9_code ?icd9_code.
        |}""".stripMargin
 
+  val PROCEDURE_ICD_REVERSE_QUERY: String =
+    s"""
+       |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
+       |PREFIX mimic-ont:<${MIMIC_ONTOLOGY_URI}>
+       |SELECT * WHERE {
+       |?procedure_icd mimic-ont:subject_id ?subject_id.
+       |?procedure_icd mimic-ont:hadm_id ?hadm_id.
+       |?procedure_icd mimic-ont:icd9_code ?icd9_code.
+       |}""".stripMargin
+
   val DIAGNOSE_ICD_QUERY: String =
     s"""
        |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
@@ -159,6 +178,16 @@ object Constants {
        |?diagnose_icd mimic-ont:subject_id ?subject_id.
        |?diagnose_icd mimic-ont:hadm_id ?hadm_id.
        |?diagnose_icd mimic-ont:seq_num ?seq_num.
+       |?diagnose_icd mimic-ont:icd9_code ?icd9_code.
+       |}""".stripMargin
+
+  val DIAGNOSE_ICD_REVERSE_QUERY: String =
+    s"""
+       |PREFIX mimic-rsc:<${MIMIC_RESOURCE_URI}>
+       |PREFIX mimic-ont:<${MIMIC_ONTOLOGY_URI}>
+       |SELECT * WHERE {
+       |?diagnose_icd mimic-ont:subject_id ?subject_id.
+       |?diagnose_icd mimic-ont:hadm_id ?hadm_id.
        |?diagnose_icd mimic-ont:icd9_code ?icd9_code.
        |}""".stripMargin
 

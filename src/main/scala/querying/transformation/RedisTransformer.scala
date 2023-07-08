@@ -9,6 +9,8 @@ import querying.message.Result
 
 object RedisTransformer {
 
+  private val KEYS = "keys"
+  private val REVERSE_LRANGE = "reverselrange"
 
   /**
    * ITEMID --> [LABEL, ABBREVIATION, DBSOURCE, LINKSTO, CATEGORY, UNITNAME, PARAM_TYPE, CONCEPTID]
@@ -32,10 +34,10 @@ object RedisTransformer {
   /**
    * LABEL --> [ITEMID]
    */
-  private def create_ontology_for_d_item_id(model: Model, key: String, redisResult: Option[Any]) = {
+  private def create_ontology_for_d_item_reverse(model: Model, key: String, redisResult: Option[Any]) = {
     val propertyValueList = redisResult.asInstanceOf[Option[List[Option[String]]]]
     for (labelValue <- propertyValueList.get) {
-      val itemIdList = RedisStore.lrange(0, labelValue.get, 0, 501).get
+      val itemIdList = RedisStore.lrange(0, labelValue.get, 0, -1).get
       for (itemId <- itemIdList) {
         val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "d_item/" + itemId.get)
         model.add(itemRsc, Constants.ITEM_ID_PRP, itemId.get)
@@ -64,10 +66,10 @@ object RedisTransformer {
   /**
    * LABEL --> [ITEMID]
    */
-  private def create_ontology_for_d_lab_item_id(model: Model, key: String, redisResult: Option[Any]) = {
+  private def create_ontology_for_d_lab_item_reverse(model: Model, key: String, redisResult: Option[Any]) = {
     val propertyValueList = redisResult.asInstanceOf[Option[List[Option[String]]]]
     for (labelValue <- propertyValueList.get) {
-      val itemIdList = RedisStore.lrange(1, labelValue.get, 0, 501).get
+      val itemIdList = RedisStore.lrange(1, labelValue.get, 0, -1).get
       for (itemId <- itemIdList) {
         val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "d_lab_item/" + itemId.get)
         model.add(itemRsc, Constants.ITEM_ID_PRP, itemId.get)
@@ -94,10 +96,10 @@ object RedisTransformer {
   /**
    * LONG_TITLE --> [ICD9_CODE]
    */
-  private def create_ontology_for_d_icd_procedures_id(model: Model, key: String, redisResult: Option[Any]) = {
+  private def create_ontology_for_d_icd_procedures_reverse(model: Model, key: String, redisResult: Option[Any]) = {
     val propertyValueList = redisResult.asInstanceOf[Option[List[Option[String]]]]
     for (labelValue <- propertyValueList.get) {
-      val itemIdList = RedisStore.lrange(2, labelValue.get, 0, 501).get
+      val itemIdList = RedisStore.lrange(2, labelValue.get, 0, -1).get
       for (itemId <- itemIdList) {
         val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "d_icd_procedure/" + itemId.get)
         model.add(itemRsc, Constants.ICD_9_CODE_PRP, itemId.get)
@@ -123,10 +125,10 @@ object RedisTransformer {
   /**
    * LONG_TITLE --> [ICD9_CODE]
    */
-  private def create_ontology_for_d_icd_diagnoses_id(model: Model, key: String, redisResult: Option[Any]) = {
+  private def create_ontology_for_d_icd_diagnoses_reverse(model: Model, key: String, redisResult: Option[Any]) = {
     val propertyValueList = redisResult.asInstanceOf[Option[List[Option[String]]]]
     for (labelValue <- propertyValueList.get) {
-      val itemIdList = RedisStore.lrange(3, labelValue.get, 0, 501).get
+      val itemIdList = RedisStore.lrange(3, labelValue.get, 0, -1).get
       for (itemId <- itemIdList) {
         val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "d_icd_diagnose/" + itemId.get)
         model.add(itemRsc, Constants.ICD_9_CODE_PRP, itemId.get)
@@ -149,6 +151,19 @@ object RedisTransformer {
   }
 
   /**
+   * LABEL -->	[CGID]
+   */
+  private def create_ontology_for_caregivers_reverse(model: Model, label: String, redisResult: Option[Any]) = {
+    val cgidList = redisResult.asInstanceOf[Option[List[Option[String]]]]
+    for (cgid <- cgidList.get) {
+      val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "caregiver/" + cgid.get)
+      model.add(itemRsc, Constants.CGID_PRP, cgid.get)
+      model.add(itemRsc, Constants.LABEL_PRP, label)
+      model.add(itemRsc, RDF.`type`, Constants.MIMIC_CAREGIVER_CLS)
+    }
+  }
+
+  /**
    * [SUBJECT_ID,	HADM_ID] -	[SEQ_NUM] -->	[ICD9_CODE]
    */
   private def create_ontology_for_procedures_icd(model: Model, compoundKey: String, redisResult: Option[Any]) = {
@@ -156,11 +171,26 @@ object RedisTransformer {
     for (propertyValue <- propertyValueList.get) {
       val ICD9Code = propertyValue._1.split(":")(1)
       val sequenceNumber = propertyValue._2.toString
-      val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "procedure_icd/" + compoundKey + "-" + sequenceNumber)
+      val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "procedure_icd/" + compoundKey + "-" + sequenceNumber.split("\\.")(0))
       val subKeys = compoundKey.split("-")
       model.add(itemRsc, Constants.SUBJECT_ID_PRP, subKeys(0))
       model.add(itemRsc, Constants.HADM_ID_PRP, subKeys(1))
       model.add(itemRsc, Constants.SEQ_NUM, sequenceNumber)
+      model.add(itemRsc, Constants.ICD_9_CODE_PRP, ICD9Code)
+      model.add(itemRsc, RDF.`type`, Constants.MIMIC_PROCEDURE_ICD_CLS)
+    }
+  }
+
+  /**
+   * [ICD9_CODE] -->	[SUBJECT_ID,	HADM_ID]
+   */
+  private def create_ontology_for_procedures_icd_reverse(model: Model, ICD9Code: String, redisResult: Option[Any]) = {
+    val compoundKeyList = redisResult.asInstanceOf[Option[List[Option[String]]]]
+    for (compoundKey <- compoundKeyList.get) {
+      val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "procedure_icd/" + compoundKey.get)
+      val subKeys = compoundKey.get.split("-")
+      model.add(itemRsc, Constants.SUBJECT_ID_PRP, subKeys(0))
+      model.add(itemRsc, Constants.HADM_ID_PRP, subKeys(1))
       model.add(itemRsc, Constants.ICD_9_CODE_PRP, ICD9Code)
       model.add(itemRsc, RDF.`type`, Constants.MIMIC_PROCEDURE_ICD_CLS)
     }
@@ -171,7 +201,7 @@ object RedisTransformer {
     for (propertyValue <- propertyValueList.get) {
       val ICD9Code = propertyValue._1.split(":")(1)
       val sequenceNumber = propertyValue._2.toString
-      val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "diagnose_icd/" + compoundKey + "-" + sequenceNumber)
+      val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "diagnose_icd/" + compoundKey + "-" + sequenceNumber.split("\\.")(0))
       val subKeys = compoundKey.split("-")
       model.add(itemRsc, Constants.SUBJECT_ID_PRP, subKeys(0))
       model.add(itemRsc, Constants.HADM_ID_PRP, subKeys(1))
@@ -181,7 +211,17 @@ object RedisTransformer {
     }
   }
 
-  private val KEYS = "keys"
+  private def create_ontology_for_diagnoses_icd_reverse(model: Model, ICD9Code: String, redisResult: Option[Any]) = {
+    val compoundKeyList = redisResult.asInstanceOf[Option[List[Option[String]]]]
+    for (compoundKey <- compoundKeyList.get) {
+      val itemRsc = ResourceFactory.createResource(Constants.MIMIC_RESOURCE_URI + "diagnose_icd/" + compoundKey.get)
+      val subKeys = compoundKey.get.split("-")
+      model.add(itemRsc, Constants.SUBJECT_ID_PRP, subKeys(0))
+      model.add(itemRsc, Constants.HADM_ID_PRP, subKeys(1))
+      model.add(itemRsc, Constants.ICD_9_CODE_PRP, ICD9Code)
+      model.add(itemRsc, RDF.`type`, Constants.MIMIC_DIAGNOSE_ICD_CLS)
+    }
+  }
 
   def transformToRdfResult(database: Int, operation: String, resultMap: Map[String, Option[Any]]): Option[Result] = {
     var query: String = ""
@@ -191,45 +231,60 @@ object RedisTransformer {
       database match {
         case 0 =>
           if (operation.equals(KEYS)) {
-            create_ontology_for_d_item_id(model, key, redisResult)
-            query = Constants.D_ITEM_KEY_QUERY
+            create_ontology_for_d_item_reverse(model, key, redisResult)
+            query = Constants.D_ITEM_REVERSE_QUERY
           } else {
             create_ontology_for_d_item(model, key, redisResult)
             query = Constants.D_ITEM_QUERY
           }
         case 1 =>
           if (operation.equals(KEYS)) {
-            create_ontology_for_d_lab_item_id(model, key, redisResult)
-            query = Constants.D_LAB_ITEM_KEY_QUERY
+            create_ontology_for_d_lab_item_reverse(model, key, redisResult)
+            query = Constants.D_LAB_ITEM_REVERSE_QUERY
           } else {
             create_ontology_for_d_lab_item(model, key, redisResult)
             query = Constants.D_LAB_ITEM_QUERY
           }
         case 2 =>
           if (operation.equals(KEYS)) {
-            create_ontology_for_d_icd_procedures_id(model, key, redisResult)
-            query = Constants.D_ICD_PROCEDURE_KEY_QUERY
+            create_ontology_for_d_icd_procedures_reverse(model, key, redisResult)
+            query = Constants.D_ICD_PROCEDURE_REVERSE_QUERY
           } else {
             create_ontology_for_d_icd_procedures(model, key, redisResult)
             query = Constants.D_ICD_PROCEDURE_QUERY
           }
         case 3 =>
           if (operation.equals(KEYS)) {
-            create_ontology_for_d_icd_diagnoses_id(model, key, redisResult)
-            query = Constants.D_ICD_DIAGNOSE_KEY_QUERY
+            create_ontology_for_d_icd_diagnoses_reverse(model, key, redisResult)
+            query = Constants.D_ICD_DIAGNOSE_REVERSE_QUERY
           } else {
             create_ontology_for_d_icd_diagnoses(model, key, redisResult)
             query = Constants.D_ICD_DIAGNOSE_QUERY
           }
         case 4 =>
-          create_ontology_for_caregivers(model, key, redisResult)
-          query = Constants.CAREGIVER_QUERY
+          if (operation.equals(REVERSE_LRANGE)) {
+            create_ontology_for_caregivers_reverse(model, key, redisResult)
+            query = Constants.CAREGIVER_REVERSE_QUERY
+          } else {
+            create_ontology_for_caregivers(model, key, redisResult)
+            query = Constants.CAREGIVER_QUERY
+          }
         case 5 =>
-          create_ontology_for_procedures_icd(model, key, redisResult)
-          query = Constants.PROCEDURE_ICD_QUERY
+          if (operation.equals(REVERSE_LRANGE)) {
+            create_ontology_for_procedures_icd_reverse(model, key, redisResult)
+            query = Constants.PROCEDURE_ICD_REVERSE_QUERY
+          } else {
+            create_ontology_for_procedures_icd(model, key, redisResult)
+            query = Constants.PROCEDURE_ICD_QUERY
+          }
         case 6 =>
-          create_ontology_for_diagnoses_icd(model, key, redisResult)
-          query = Constants.DIAGNOSE_ICD_QUERY
+          if (operation.equals(REVERSE_LRANGE)) {
+            create_ontology_for_diagnoses_icd_reverse(model, key, redisResult)
+            query = Constants.DIAGNOSE_ICD_REVERSE_QUERY
+          } else {
+            create_ontology_for_diagnoses_icd(model, key, redisResult)
+            query = Constants.DIAGNOSE_ICD_QUERY
+          }
         case _ => println("Invalid database selected. (Valid through 0-6)")
       }
     }

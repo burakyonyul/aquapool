@@ -49,9 +49,10 @@ class RedisExecutor extends Actor with ActorLogging {
 
     for (key <- keys) {
       operation match {
+        case "reverselrange" => resultMap += (key -> RedisStore.lrange(database, key, 0, -1))
         case "keys" => resultMap += (key -> RedisStore.keys(database, s"""$key"""))
         case "get" => resultMap += (key -> RedisStore.get(database, key))
-        case "lrange" => resultMap += (key -> RedisStore.lrange(database, key, 0, 501))
+        case "lrange" => resultMap += (key -> RedisStore.lrange(database, key, 0, -1))
         case "zrangeWithScore" => resultMap += (key -> RedisStore.zrangeWithScore(database, key))
       }
     }
