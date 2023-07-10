@@ -6,11 +6,17 @@ object PostgresqlStore {
 
   val hikariConfig = new HikariConfig()
 
-  hikariConfig.setJdbcUrl("jdbc:postgresql://localhost:5432/mimic")
+  //hikariConfig.setJdbcUrl("jdbc:postgresql://localhost:5432/mimic")
 
-  hikariConfig.setUsername("postgres")
+  hikariConfig.setJdbcUrl("jdbc:postgresql://155.223.25.1:5433/mimic")
 
-  hikariConfig.setPassword("admin123")
+  //hikariConfig.setUsername("postgres")
+
+  hikariConfig.setUsername("bigdata")
+
+  //hikariConfig.setPassword("admin123")
+
+  hikariConfig.setPassword("postgres")
 
   hikariConfig.addDataSourceProperty("cachePrepStmts", "true")
 

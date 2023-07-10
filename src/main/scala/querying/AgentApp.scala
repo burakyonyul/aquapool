@@ -3,6 +3,7 @@ package querying
 import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
 import querying.actor.Agent
+import querying.evaluation.Queries
 import querying.main.Constants
 import querying.message.PolyStoreQuery
 
@@ -14,9 +15,6 @@ import scala.collection.immutable.HashMap
 object AgentApp {
 
   def main(args: Array[String]): Unit = {
-    //val organizationDataList = OrganizationDataReader.readOrganizationData("/organization_data.txt") "/home/burak/Development/monitoring-environment/resources/void"
-    //val voidModel = VoidModelConstructor.constructVOIDSpaceModel(System.getProperty("user.dir") + "/src/main/resources/void")
-
     val ipAddress = if (args.isDefinedAt(0)) args(0) else getIpAddress
     val port = if (args.isDefinedAt(1)) args(1) else "2553"
     val config = ConfigFactory.parseString(s"akka.remote.artery.canonical.hostname = $ipAddress").
@@ -28,19 +26,11 @@ object AgentApp {
 
     val agent = system.actorOf(Agent.props, "QuerierClient-1")
 
-    val influxQuery =
-      s"""
-         |from(bucket: "mimic-iii")
-         ||> range(start:2000-01-01, stop:2012-12-31)
-         ||> filter(fn: (r) => r["_measurement"] == "chart_event")
-         ||> filter(fn: (r) => r["itemid"] == "1532")
-         ||> filter(fn: (r) => r["subject_id"] == "21")
-         ||> filter(fn: (r) => r["_field"] == "value" or r["_field"] == "icustay_id" or r["_field"] == "hadm_id")
-         ||> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
-         |""".stripMargin
-    val redisQuery = "[0] [lrange] [{1532}]"
-    val queryMap = HashMap(redisQuery -> Constants.REDIS, influxQuery -> Constants.INFLUXDB)
-    agent ! PolyStoreQuery(queryMap, "")
+    //val redis_influx_map = HashMap(Queries.REDIS_LRANGE_MAGNESIUM -> Constants.REDIS, Queries.INFLUXDB_ITEM_OF_SUBJECT -> Constants.INFLUXDB)
+    //agent ! PolyStoreQuery(redis_influx_map, "")
+
+    val redis_elasticsearch_map = HashMap(Queries.REDIS_LRANGE_SEPSIS_PATIENTS -> Constants.REDIS, Queries.ELASTICSEARCH_AZOTEMIA_PATIENTS -> Constants.ELASTICSEARCH)
+    agent ! PolyStoreQuery(redis_elasticsearch_map, "")
 
   }
 

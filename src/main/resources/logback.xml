@@ -11,13 +11,13 @@
 </appender>
 
 <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <file>${user.home}/log/axe.log</file>
+    <file>log/axe.log</file>
     <encoder>
         <pattern>[%date{ISO8601}] [%level] [%logger] [%marker] [%thread] - %msg MDC: {%mdc}%n</pattern>
     </encoder>
 </appender>
 
-<root level="DEBUG">
+<root level="INFO">
     <appender-ref ref="STDOUT"/>
     <appender-ref ref="FILE"/>
 </root>

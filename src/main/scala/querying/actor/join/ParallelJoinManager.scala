@@ -4,10 +4,9 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.hp.hpl.jena.query.{ResultSet, ResultSetFactory, ResultSetFormatter}
 import com.hp.hpl.jena.sparql.core.Var
 import com.hp.hpl.jena.sparql.engine.binding.Binding
-import main.QueryIterCollection
+import join.{MultipleNode, QueryIterCollection}
 import play.api.libs.json.Json
 import querying.message.{DistributeBuckets, PerformHashJoin, Result}
-import tr.edu.ege.seagent.boundarq.filterbound.MultipleNode
 
 import java.io.ByteArrayOutputStream
 import scala.collection.JavaConverters._
@@ -16,21 +15,22 @@ import scala.collection.immutable.HashMap
 object ParallelJoinManager {
 
   val splitCount = 100
-/*
-  val extractEntityId: ShardRegion.ExtractEntityId = {
-    case dbs@DistributeBuckets(_, _) => (dbs.hashCode.toString, dbs)
-  }
 
-  private val numberOfShards = 20
+  /*
+    val extractEntityId: ShardRegion.ExtractEntityId = {
+      case dbs@DistributeBuckets(_, _) => (dbs.hashCode.toString, dbs)
+    }
 
-  val extractShardId: ShardRegion.ExtractShardId = {
-    case dbs@DistributeBuckets(_, _) => (dbs.hashCode % numberOfShards).toString
-  }
-*/
+    private val numberOfShards = 20
+
+    val extractShardId: ShardRegion.ExtractShardId = {
+      case dbs@DistributeBuckets(_, _) => (dbs.hashCode % numberOfShards).toString
+    }
+  */
   def props: Props = Props(new ParallelJoinManager)
 }
 
-class   ParallelJoinManager extends Actor with ActorLogging {
+class ParallelJoinManager extends Actor with ActorLogging {
 
   private var bucketCount = 0
   private var bindings: Vector[Binding] = Vector.empty
@@ -54,11 +54,11 @@ class   ParallelJoinManager extends Actor with ActorLogging {
 
     case result@Result(_, _, _) =>
       handleJoinResult(result)
-/*
-    case ShardRegion.Passivate =>
-      log.info("Passivation message has been received start parent shard!")
-      context.stop(self)
-*/
+    /*
+        case ShardRegion.Passivate =>
+          log.info("Passivation message has been received start parent shard!")
+          context.stop(self)
+    */
   }
 
   private def handleJoinResult(result: Result) = {

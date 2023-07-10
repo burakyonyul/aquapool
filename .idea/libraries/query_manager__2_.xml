@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="query-manager (2)">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/query-manager.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/query-manager.jar!/" />
+    </SOURCES>
+  </library>
+</component>

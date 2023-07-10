@@ -2,7 +2,7 @@ package querying.actor.join
 
 import akka.actor.{Actor, ActorLogging, Props}
 import com.hp.hpl.jena.query.ResultSetFormatter
-import main.ResultSetMerger
+import join.ResultSetMerger
 import play.api.libs.json.Json
 import querying.message.{PerformHashJoin, Result}
 
@@ -45,11 +45,11 @@ class HashJoinPerformer extends Actor with ActorLogging {
       //send hash join result back end the sender
       sender ! Result(Json.parse(outputStream.toByteArray), resultSet.getResultVars.asScala, 1)
       context.stop(self)
-      //context.parent ! ShardRegion.Passivate(stopMessage = PoisonPill)
-/*
-    case ShardRegion.Passivate =>
-      log.info("Passivation message has been received start parent shard!")
-      context.stop(self)
-*/
+    //context.parent ! ShardRegion.Passivate(stopMessage = PoisonPill)
+    /*
+        case ShardRegion.Passivate =>
+          log.info("Passivation message has been received start parent shard!")
+          context.stop(self)
+    */
   }
 }

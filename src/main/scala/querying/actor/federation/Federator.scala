@@ -2,7 +2,7 @@ package querying.actor.federation
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.cluster.sharding.ShardRegion
-import main.QueryManager
+import join.JoinUtils
 import org.apache.spark.util.SizeEstimator
 import querying.actor.join.ParallelJoinManager
 import querying.actor.wrapper.{ElasticsearchExecutor, InfluxdbExecutor, PostgresqlExecutor, RedisExecutor}
@@ -82,7 +82,7 @@ class Federator extends Actor with ActorLogging {
   private def seekForMatch(receivedResult: Result): Boolean = {
     for {
       result <- results
-      if QueryManager.matchAnyVar(receivedResult.resultVars.asJava, result.resultVars.asJava)
+      if JoinUtils.matchAnyVar(receivedResult.resultVars.asJava, result.resultVars.asJava)
     } {
       results = results.filterNot(res => res == result)
       val bucketDistributor = context.actorOf(ParallelJoinManager.props)
