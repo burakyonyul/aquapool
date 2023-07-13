@@ -39,9 +39,7 @@ object ElasticsearchTransformationTest extends App {
   //ResultSetFormatter.out(rdfResultSet)
   while (rdfResultSet.hasNext) {
     val solution = rdfResultSet.next()
-    if (solution.getLiteral("subject_id").getString == "29035") {
-      println(s"Solution: [${solution}], Row Number: [${rdfResultSet.getRowNumber}]")
-    }
+    println(s"Solution: [${solution}], Row Number: [${rdfResultSet.getRowNumber}]")
   }
   ElasticsearchStore.client.close()
 }

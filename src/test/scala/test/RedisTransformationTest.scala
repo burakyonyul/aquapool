@@ -40,8 +40,7 @@ object RedisTransformationTest extends App {
   //queryRedisAsRDF(6, "570-100913", "1430-184067", "zrangeWithScore")
   //queryRedisAsRDF(4, "RN", "UA", "reverselrange")
   //queryRedisAsRDF(5, "9671", "8872", "reverselrange")
-  //queryRedisAsRDF(6, "V3000", "7793", "reverselrange")
-  queryRedisAsRDF(6, "5849", "", "reverselrange")
+  queryRedisAsRDF(6, "V3000", "7793", "reverselrange")
 
   private def queryRedisAsRDF(database: Int, firstKey: String, secondKey: String, command: String) = {
     var firstValues: Option[Any] = None
@@ -61,12 +60,10 @@ object RedisTransformationTest extends App {
       //secondValues = RedisStore.zrangeWithScore(database, secondKey)
     }
 
-    val rs: ResultSet = RedisTransformer.transformToRdfResult(database, command, Map(firstKey -> firstValues)).get.toResultSet
+    val rs: ResultSet = RedisTransformer.transformToRdfResult(database, command, Map(firstKey -> firstValues, secondKey -> secondValues)).get.toResultSet
     while (rs.hasNext) {
       val solution = rs.next()
-      if (solution.getLiteral("subject_id").getString == "29035") {
-        println(s"Solution: [$solution] - Row Number: [${rs.getRowNumber}]")
-      }
+      println(s"Solution: [$solution] - Row Number: [${rs.getRowNumber}]")
     }
   }
 

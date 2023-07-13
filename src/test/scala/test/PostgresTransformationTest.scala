@@ -23,9 +23,7 @@ object PostgresTransformationTest extends App {
       //ResultSetFormatter.out(rdfRS)
       while (rdfRS.hasNext) {
         val solution = rdfRS.next()
-        if (solution.getLiteral("subject_id").getString == "29035") {
-          println(s"Solution: [${solution}], Row Number: [${rdfRS.getRowNumber}]")
-        }
+        println(s"Solution: [${solution}], Row Number: [${rdfRS.getRowNumber}]")
       }
     } finally {
       conn.close()

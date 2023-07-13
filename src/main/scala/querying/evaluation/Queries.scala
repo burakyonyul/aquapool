@@ -26,7 +26,7 @@ object Queries {
   val INFLUXDB_RESPIRATORY_RATE_OF_ACUTE_KIDNEY_INJURY_PATIENT: String =
     s"""
        |from(bucket: "mimic-iii")
-       ||> range(start:2006-08-04T00:00:00Z, stop:2006-09-20T00:00:00Z)
+       ||> range(start:2009-10-28T00:00:00Z, stop:2009-12-10T00:00:00Z)
        ||> filter(fn: (r) => r["_measurement"] == "chart_event")
        ||> filter(fn: (r) => r["itemid"] == "618")
        ||> filter(fn: (r) => r["_field"] == "value" or r["_field"] == "icustay_id" or r["_field"] == "hadm_id")

@@ -9,11 +9,11 @@ object InfluxdbTransformationTest extends App {
   val query =
     """
       |from(bucket: "mimic-iii")
-      ||> range(start:2006-08-04T00:00:00Z, stop:2006-11-05T00:00:00Z)
+      ||> range(start:2000-01-01, stop:2012-12-31)
       ||> filter(fn: (r) => r["_measurement"] == "chart_event")
-      ||> filter(fn: (r) => r["subject_id"] == "29035")
-      ||> filter(fn: (r) => r["itemid"] == "618")
-      ||> filter(fn: (r) => r["_field"] == "value" or r["_field"] == "icustay_id" or (r["_field"] == "hadm_id") or r["_field"] == "deidentifiedcharttime")
+      ||> filter(fn: (r) => r["itemid"] == "678" or r["itemid"] == "198")
+      ||> filter(fn: (r) => r["subject_id"] == "191")
+      ||> filter(fn: (r) => r["_field"] == "value" or r["_field"] == "icustay_id" or r["_field"] == "hadm_id")
       ||> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
         """.stripMargin
 
@@ -22,8 +22,6 @@ object InfluxdbTransformationTest extends App {
   //ResultSetFormatter.out(resultSet)
   while (resultSet.hasNext) {
     val solution = resultSet.next()
-    if (solution.getLiteral("hadm_id").getString == "154213") {
-      println(s"Solution: [${solution}], Row Number: [${resultSet.getRowNumber}]")
-    }
+    println(s"Solution: [${solution}], Row Number: [${resultSet.getRowNumber}]")
   }
 }

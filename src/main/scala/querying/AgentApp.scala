@@ -27,7 +27,7 @@ object AgentApp {
 
     val agent = system.actorOf(Agent.props, "QuerierClient-1")
 
-    val query_map = HashMap( Queries.POSTGRESQL_DEAD_PATIENTS -> Constants.POSTGRESQL, Queries.INFLUXDB_RESPIRATORY_RATE_OF_ACUTE_KIDNEY_INJURY_PATIENT -> Constants.INFLUXDB, Queries.ELASTICSEARCH_AZOTEMIA_PATIENTS -> Constants.ELASTICSEARCH)
+    val query_map = HashMap(Queries.REDIS_LRANGE_MAGNESIUM -> Constants.REDIS, Queries.INFLUXDB_ITEM_OF_SUBJECT -> Constants.INFLUXDB)
     agent ! PolyStoreQuery(query_map, "")
 
     //val polyStoreQuery = PolystoreQueryReader.read(queryPath)
