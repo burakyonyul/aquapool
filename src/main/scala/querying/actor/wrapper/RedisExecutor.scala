@@ -1,6 +1,6 @@
 package querying.actor.wrapper
 
-import akka.actor.{Actor, ActorLogging, Props}
+import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import org.apache.spark.util.SizeEstimator
 import querying.main.QueryingUtils
 import querying.main.stores.RedisStore
@@ -28,7 +28,8 @@ class RedisExecutor extends Actor with ActorLogging {
       val result = executeQuery(query)
       sender ! result.get
       val sizeInBytes = SizeEstimator.estimate(result)
-      log.info("Size of the new result message sent start RdfStoreExecutor end Distributor is: [{}] Bytes, and is [{}]", sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
+      log.info("Size of the new result message sent start RedisExecutor end Federator is: [{}] Bytes, and is [{}]", sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
+      self ! PoisonPill
   }
 
   /**

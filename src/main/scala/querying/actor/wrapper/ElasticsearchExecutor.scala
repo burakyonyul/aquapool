@@ -1,6 +1,6 @@
 package querying.actor.wrapper
 
-import akka.actor.{Actor, ActorLogging, Props}
+import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.requests.searches.SearchResponse
 import com.sksamuel.elastic4s.{RequestFailure, RequestSuccess}
@@ -31,7 +31,8 @@ class ElasticsearchExecutor extends Actor with ActorLogging {
       val result = executeQuery(query)
       sender ! result.get
       val sizeInBytes = SizeEstimator.estimate(result)
-      log.info("Size of the new result message sent start RdfStoreExecutor end Distributor is: [{}] Bytes, and is [{}]", sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
+      log.info("Size of the new result message sent start ElasticsearchExecutor end Federator is: [{}] Bytes, and is [{}]", sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
+      self ! PoisonPill
   }
 
   protected def executeQuery(query: String) = {

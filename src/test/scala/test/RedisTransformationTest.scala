@@ -40,7 +40,8 @@ object RedisTransformationTest extends App {
   //queryRedisAsRDF(6, "570-100913", "1430-184067", "zrangeWithScore")
   //queryRedisAsRDF(4, "RN", "UA", "reverselrange")
   //queryRedisAsRDF(5, "9671", "8872", "reverselrange")
-  queryRedisAsRDF(6, "V3000", "7793", "reverselrange")
+  //queryRedisAsRDF(6, "V3000", "7793", "reverselrange")
+  queryRedisAsRDF(6, "5849", "", "reverselrange")
 
   private def queryRedisAsRDF(database: Int, firstKey: String, secondKey: String, command: String) = {
     var firstValues: Option[Any] = None
@@ -48,22 +49,24 @@ object RedisTransformationTest extends App {
     command match {
       case "reverselrange" =>
         firstValues = RedisStore.lrange(database, firstKey, 0, -1)
-        secondValues = RedisStore.lrange(database, secondKey, 0, -1)
+      //secondValues = RedisStore.lrange(database, secondKey, 0, -1)
       case "keys" =>
         firstValues = RedisStore.keys(database, s"""$firstKey""")
-        secondValues = RedisStore.keys(database, s"""$secondKey""")
+      //secondValues = RedisStore.keys(database, s"""$secondKey""")
       case "lrange" =>
         firstValues = RedisStore.lrange(database, firstKey, 0, -1)
-        secondValues = RedisStore.lrange(database, secondKey, 0, -1)
+      //secondValues = RedisStore.lrange(database, secondKey, 0, -1)
       case "zrangeWithScore" =>
         firstValues = RedisStore.zrangeWithScore(database, firstKey)
-        secondValues = RedisStore.zrangeWithScore(database, secondKey)
+      //secondValues = RedisStore.zrangeWithScore(database, secondKey)
     }
 
-    val rs: ResultSet = RedisTransformer.transformToRdfResult(database, command, Map(firstKey -> firstValues, secondKey -> secondValues)).get.toResultSet
+    val rs: ResultSet = RedisTransformer.transformToRdfResult(database, command, Map(firstKey -> firstValues)).get.toResultSet
     while (rs.hasNext) {
       val solution = rs.next()
-      println(s"Solution: [$solution] - Row Number: [${rs.getRowNumber}]")
+      if (solution.getLiteral("subject_id").getString == "29035") {
+        println(s"Solution: [$solution] - Row Number: [${rs.getRowNumber}]")
+      }
     }
   }
 

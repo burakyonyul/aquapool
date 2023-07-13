@@ -21,13 +21,15 @@ object ElasticsearchTransformer {
       val keysIterator = searchMap.keysIterator
       while (keysIterator.hasNext) {
         val key = keysIterator.next()
-        val keyPrp = ResourceFactory.createProperty(Constants.MIMIC_ONTOLOGY_URI, key)
-        val fieldValue = if (searchMap(key) == null) "" else searchMap(key)
-        model.add(noteeventRsc, keyPrp, fieldValue.toString)
-        sparqlBody +=
-          s"""
-             |?s mimic-ont:$key ?$key.
-             |""".stripMargin
+        if (key != "row_id" && key != "charttime" && key != "storetime" && key != "cgid") {
+          val keyPrp = ResourceFactory.createProperty(Constants.MIMIC_ONTOLOGY_URI, key)
+          val fieldValue = if (searchMap(key) == null) "" else searchMap(key)
+          model.add(noteeventRsc, keyPrp, fieldValue.toString)
+          sparqlBody +=
+            s"""
+               |?elasticRsc mimic-ont:$key ?$key.
+               |""".stripMargin
+        }
       }
     }
     val sparqlQuery = Constants.GENERIC_SPARQL_PREFIX + sparqlBody + Constants.CLOSE_CURLY_BRACE

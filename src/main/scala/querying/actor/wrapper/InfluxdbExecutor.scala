@@ -1,6 +1,6 @@
 package querying.actor.wrapper
 
-import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
+import akka.actor.{Actor, ActorLogging, ActorSystem, PoisonPill, Props}
 import akka.stream.scaladsl.Sink
 import com.influxdb.query.FluxRecord
 import org.apache.spark.util.SizeEstimator
@@ -35,7 +35,8 @@ class InfluxdbExecutor extends Actor with ActorLogging {
       val result = executeQuery(query)
       sender ! result.get
       val sizeInBytes = SizeEstimator.estimate(result)
-      log.info("Size of the new result message sent start RdfStoreExecutor end Distributor is: [{}] Bytes, and is [{}]", sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
+      log.info("Size of the new result message sent start InfluxdbExecutor end Federator is: [{}] Bytes, and is [{}]", sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
+      self ! PoisonPill
   }
 
   protected def executeQuery(query: String): Option[Result] = {

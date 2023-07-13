@@ -1,13 +1,11 @@
 package test
 
-import com.hp.hpl.jena.query.ResultSetFormatter
-import com.sksamuel.elastic4s.ElasticDsl.search
-import com.sksamuel.elastic4s.{RequestFailure, RequestSuccess}
+import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.requests.searches.SearchResponse
+import com.sksamuel.elastic4s.{RequestFailure, RequestSuccess}
 import querying.main.stores.ElasticsearchStore
 import querying.message.Result
 import querying.transformation.ElasticsearchTransformer
-import com.sksamuel.elastic4s.ElasticDsl._
 
 object ElasticsearchTransformationTest extends App {
   var result: Option[Result] = None
@@ -16,18 +14,16 @@ object ElasticsearchTransformationTest extends App {
        |{
        |    "bool" : {
        |      "must" : [
-       |        { "term" : { "subject_id": "191" } },
-       |        { "term" : { "category": "Discharge summary" } },
        |        {
        |            "query_string": {
-       |              "query": "lamincetomies",
+       |              "query": "azotemia",
        |              "default_field": "text"
        |            }
        |        }
        |      ]
        |    }
        |},
-       |"size":30
+       |"size":10000
        |""".stripMargin
   val resp = ElasticsearchStore.client.execute {
     search("noteevents").rawQuery(query)
@@ -40,6 +36,12 @@ object ElasticsearchTransformationTest extends App {
     case results: RequestSuccess[_] => println(results.result)
   }
   val rdfResultSet = result.get.toResultSet
-  ResultSetFormatter.out(rdfResultSet)
+  //ResultSetFormatter.out(rdfResultSet)
+  while (rdfResultSet.hasNext) {
+    val solution = rdfResultSet.next()
+    if (solution.getLiteral("subject_id").getString == "29035") {
+      println(s"Solution: [${solution}], Row Number: [${rdfResultSet.getRowNumber}]")
+    }
+  }
   ElasticsearchStore.client.close()
 }

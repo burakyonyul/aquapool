@@ -11,7 +11,7 @@ object PostgresTransformationTest extends App {
   //queryPostgresqlAsRDF("SELECT * FROM mimiciii.patients LIMIT 10")
   queryPostgresqlAsRDF(
     s"""
-       |select * from mimiciii.chartevents where  itemid=1532 and subject_id=21
+       |SELECT * FROM mimiciii.admissions WHERE admissions.deathtime IS NOT NULL
        |""".stripMargin)
 
   private def queryPostgresqlAsRDF(sqlQuery: String) = {
@@ -23,7 +23,9 @@ object PostgresTransformationTest extends App {
       //ResultSetFormatter.out(rdfRS)
       while (rdfRS.hasNext) {
         val solution = rdfRS.next()
-        println(solution)
+        if (solution.getLiteral("subject_id").getString == "29035") {
+          println(s"Solution: [${solution}], Row Number: [${rdfRS.getRowNumber}]")
+        }
       }
     } finally {
       conn.close()

@@ -12,6 +12,7 @@ class InfluxdbTransformer {
 
   private val model: Model = ModelFactory.createDefaultModel()
   private var sparqlBody = ""
+  private var sparqlQuery = ""
 
   def generateMeasurementResource(fluxRecord: FluxRecord): Unit = {
     val fieldValues = fluxRecord.getValues.keySet()
@@ -21,19 +22,24 @@ class InfluxdbTransformer {
     val measurementRsc = ResourceFactory.createResource(s"${Constants.MIMIC_RESOURCE_URI}$measurementName/${UUID.randomUUID()}")
     while (fieldIter.hasNext) {
       val fieldKey = fieldIter.next()
-      val fieldPrp = ResourceFactory.createProperty(Constants.MIMIC_ONTOLOGY_URI, fieldKey)
-      //println(fluxRecord.getValueByKey(fieldKey))
-      val value = if (fluxRecord.getValueByKey(fieldKey) != null) fluxRecord.getValueByKey(fieldKey).toString else ""
-      model.add(measurementRsc, fieldPrp, value)
-      sparqlBody +=
-        s"""
-           |?s mimic-ont:$fieldKey ?$fieldKey.
-           |""".stripMargin
+      if (fieldKey != "row_id") {
+        val fieldPrp = ResourceFactory.createProperty(Constants.MIMIC_ONTOLOGY_URI, fieldKey)
+        //println(fluxRecord.getValueByKey(fieldKey))
+        val value = if (fluxRecord.getValueByKey(fieldKey) != null) fluxRecord.getValueByKey(fieldKey).toString else ""
+        model.add(measurementRsc, fieldPrp, value)
+        if (sparqlQuery.isEmpty) {
+          sparqlBody +=
+            s"""
+               |?influxRsc mimic-ont:$fieldKey ?$fieldKey.
+               |""".stripMargin
+        }
+      }
     }
+    sparqlQuery = Constants.GENERIC_SPARQL_PREFIX + sparqlBody + Constants.CLOSE_CURLY_BRACE
   }
 
   def transformToRdfResult(): Option[Result] = {
-    val sparqlQuery = Constants.GENERIC_SPARQL_PREFIX + sparqlBody + Constants.CLOSE_CURLY_BRACE
+    println(sparqlQuery)
     val result = QueryingUtils.convertRdf2Result(QueryExecutionFactory.create(sparqlQuery, model).execSelect())
     Option(result)
   }

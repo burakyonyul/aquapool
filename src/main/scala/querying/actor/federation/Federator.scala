@@ -1,6 +1,6 @@
 package querying.actor.federation
 
-import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill}
 import akka.cluster.sharding.ShardRegion
 import join.JoinUtils
 import org.apache.spark.util.SizeEstimator
@@ -76,6 +76,7 @@ class Federator extends Actor with ActorLogging {
       context.actorSelection(querySender.get) ! receivedResult
       log.info("Federated query has been performed in: [{}] milliseconds", System.currentTimeMillis() - startTimeInMillis)
       log.info("Size of the result message sent start Federator end Sender is: [{}] Bytes, and is [{}]", sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
+      self ! PoisonPill
     }
   }
 
@@ -117,7 +118,7 @@ class Federator extends Actor with ActorLogging {
         val executeQuery = ExecuteQuery(query)
         executor ! executeQuery
         val sizeInBytes = SizeEstimator.estimate(executeQuery)
-        log.info("Size of the ExecuteQuery message sent start Distributor end [{}]Executor is: [{}] Bytes, and is [{}]", store, sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
+        log.info("Size of the ExecuteQuery message sent start Federator end [{}]Executor is: [{}] Bytes, and is [{}]", store, sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
       }
     }
   }
