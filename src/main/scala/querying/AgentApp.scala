@@ -4,10 +4,7 @@ import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
 import querying.actor.Agent
 import querying.evaluation.Queries
-import querying.main.Constants
 import querying.message.PolyStoreQuery
-
-import scala.collection.immutable.HashMap
 
 /**
  * TODO: Polystore use cases need to be generated
@@ -27,8 +24,9 @@ object AgentApp {
 
     val agent = system.actorOf(Agent.props, "QuerierClient-1")
 
-    val query_map = HashMap(Queries.REDIS_LRANGE_MAGNESIUM -> Constants.REDIS, Queries.INFLUXDB_ITEM_OF_SUBJECT -> Constants.INFLUXDB)
-    agent ! PolyStoreQuery(query_map, "")
+    //val query_map = HashMap(Queries.REDIS_LRANGE_MAGNESIUM -> Constants.REDIS, Queries.INFLUXDB_ITEM_OF_SUBJECT -> Constants.INFLUXDB)
+    //val query_map = HashMap(Queries.REDIS_LRANGE_SEPSIS_PATIENTS -> Constants.REDIS, Queries.ELASTICSEARCH_AZOTEMIA_PATIENTS -> Constants.ELASTICSEARCH)
+    agent ! PolyStoreQuery(Queries.Query_A_4_10, "")
 
     //val polyStoreQuery = PolystoreQueryReader.read(queryPath)
     //println(polyStoreQuery)

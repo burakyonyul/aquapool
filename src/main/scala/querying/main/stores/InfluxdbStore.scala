@@ -11,7 +11,7 @@ object InfluxdbStore {
   val org = "EgeUniversity"
   val bucket = "mimic-iii"
   // local server URL
-  val serverURL = "http://localhost:8086"
+  val serverURL = "http://localhost:8086?readTimeout=999999"
   // remote server URL
   //val serverURL = "http://155.223.25.2:8086"
 

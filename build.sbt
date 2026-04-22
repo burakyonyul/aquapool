@@ -45,7 +45,11 @@ libraryDependencies ++= Seq(
   "io.aeron" % "aeron-client" % "1.40.0"
 ).map(_ exclude("org.slf4j", "*"))
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.11"
-
+dependencyOverrides ++= Seq(
+  "org.agrona" % "agrona" % "1.15.1",
+  "io.aeron" % "aeron-driver" % "1.40.0",
+  "io.aeron" % "aeron-client" % "1.40.0"
+)
 //libraryDependencies ++= Seq(
 //  "com.typesafe.akka" %% "akka-persistence-cassandra" % "0.103",
 //  "com.typesafe.akka" %% "akka-persistence-cassandra-launcher" % "0.103" % Test

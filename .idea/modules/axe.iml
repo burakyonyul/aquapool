@@ -142,7 +142,7 @@
     <orderEntry type="library" name="sbt: net.sf.opencsv:opencsv:2.3:jar" level="project" />
     <orderEntry type="library" name="sbt: net.sf.py4j:py4j:0.10.9.5:jar" level="project" />
     <orderEntry type="library" name="sbt: net.sourceforge.f2j:arpack_combined_all:0.1:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.agrona:agrona:1.18.2:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.agrona:agrona:1.15.1:jar" level="project" />
     <orderEntry type="library" name="sbt: org.antlr:antlr4-runtime:4.8:jar" level="project" />
     <orderEntry type="library" name="sbt: org.apache.arrow:arrow-format:7.0.0:jar" level="project" />
     <orderEntry type="library" name="sbt: org.apache.arrow:arrow-memory-core:7.0.0:jar" level="project" />

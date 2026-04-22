@@ -14,7 +14,7 @@ import scala.collection.immutable.HashMap
 
 object ParallelJoinManager {
 
-  val splitCount = 100
+  val bucketSize = 100
 
   /*
     val extractEntityId: ShardRegion.ExtractEntityId = {
@@ -66,7 +66,7 @@ class ParallelJoinManager extends Actor with ActorLogging {
     val resultSet = result.toResultSet
     insertResult(resultSet)
     // if join has completed notify join result
-    if (bucketCount == 0) {
+    if (bucketCount.hashCode() == 0) {
       val result = generateResult(resultSet.getResultVars.asScala, bindings)
       notifyRegisteryList(result)
       context.stop(self)
@@ -116,10 +116,16 @@ class ParallelJoinManager extends Actor with ActorLogging {
     commonVars
   }
 
+  /**
+   * Do some optimizations about empty sets
+   * @param resultSet
+   * @param commonVars
+   * @return
+   */
   def generateBucketMap(resultSet: ResultSet, commonVars: Vector[String]): HashMap[Int, Vector[Binding]] = {
     var bucketMap: HashMap[Int, Vector[Binding]] = HashMap.empty
 
-    for (i <- 0 until ParallelJoinManager.splitCount) {
+    for (i <- 0 until ParallelJoinManager.bucketSize) {
       bucketMap += (i -> Vector.empty[Binding])
     }
 
@@ -144,8 +150,8 @@ class ParallelJoinManager extends Actor with ActorLogging {
   }
 
   private def findIndex(multipleNode: MultipleNode) = {
-    var index = multipleNode.hashCode % ParallelJoinManager.splitCount
-    if (index < 0) index += ParallelJoinManager.splitCount
+    var index = multipleNode.hashCode % ParallelJoinManager.bucketSize
+    if (index < 0) index += ParallelJoinManager.bucketSize
     index
   }
 
