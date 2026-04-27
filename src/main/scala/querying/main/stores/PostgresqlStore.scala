@@ -6,17 +6,18 @@ object PostgresqlStore {
 
   val hikariConfig = new HikariConfig()
 
-  hikariConfig.setJdbcUrl("jdbc:postgresql://localhost:5432/poly_mimic_rel")
+  //hikariConfig.setJdbcUrl("jdbc:postgresql://localhost:5432/poly_mimic_rel")
 
   //hikariConfig.setJdbcUrl("jdbc:postgresql://155.223.25.1:5433/poly_mimic_rel")
+  hikariConfig.setJdbcUrl("jdbc:postgresql://155.223.25.1:5433/mimic")
 
-  hikariConfig.setUsername("postgres")
+  //hikariConfig.setUsername("postgres")
 
-  //hikariConfig.setUsername("bigdata")
+  hikariConfig.setUsername("bigdata")
 
-  hikariConfig.setPassword("admin123")
+  //hikariConfig.setPassword("admin123")
 
-  //hikariConfig.setPassword("postgres")
+  hikariConfig.setPassword("postgres")
 
   hikariConfig.addDataSourceProperty("cachePrepStmts", "true")
 
@@ -27,5 +28,5 @@ object PostgresqlStore {
   hikariConfig.setDriverClassName("org.postgresql.Driver")
 
   val hikariDataSource = new HikariDataSource(hikariConfig)
-  
+
 }

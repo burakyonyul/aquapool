@@ -28,7 +28,7 @@ class Federator extends Actor with ActorLogging {
 
   private var resultCount = 0
   private var results: Vector[Result] = Vector.empty
-  private var querySender: Option[String] = None
+  private var querySender: Option[ActorRef] = None
   private var resultMap: HashMap[Int, Result] = HashMap.empty
   private var polyStoreQuery: Option[PolyStoreQuery] = None
   private var startTimeInMillis = 0L;
@@ -54,7 +54,7 @@ class Federator extends Actor with ActorLogging {
       val sizeInBytes = SizeEstimator.estimate(polyStoreQuery)
       log.info("Size of the FederateQuery message sent start Agent end Federator is: [{}] Bytes, and is [{}]", sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
       log.debug("Hash Code for Federate Query: [{}], and Query Value: [{}]", psq.hashCode, psq)
-      querySender = Some(sender().path.toStringWithoutAddress)
+      querySender = Some(sender())
       distribute(psq)
     case receivedResult@Result(_, _, _) =>
       // get hash join performer region
@@ -73,7 +73,7 @@ class Federator extends Actor with ActorLogging {
     if (resultCount == 0 && results.size == 1) {
       val sizeInBytes = SizeEstimator.estimate(receivedResult)
       log.info("Result has been constructed for the polystore query [{}]", polyStoreQuery.get)
-      context.actorSelection(querySender.get) ! receivedResult
+      querySender.get ! receivedResult
       log.info("Federated query has been performed in: [{}] milliseconds", System.currentTimeMillis() - startTimeInMillis)
       log.info("Size of the result message sent start Federator end Sender is: [{}] Bytes, and is [{}]", sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
       self ! PoisonPill

@@ -1,10 +1,15 @@
 package querying
 
 import akka.actor.ActorSystem
+import akka.pattern.ask
+import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
 import querying.actor.Agent
 import querying.evaluation.Queries
-import querying.message.PolyStoreQuery
+import querying.message.{PolyStoreQuery, Result}
+
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
 
 /**
  * TODO: Polystore use cases need to be generated
@@ -26,7 +31,16 @@ object AgentApp {
 
     //val query_map = HashMap(Queries.REDIS_LRANGE_MAGNESIUM -> Constants.REDIS, Queries.INFLUXDB_ITEM_OF_SUBJECT -> Constants.INFLUXDB)
     //val query_map = HashMap(Queries.REDIS_LRANGE_SEPSIS_PATIENTS -> Constants.REDIS, Queries.ELASTICSEARCH_AZOTEMIA_PATIENTS -> Constants.ELASTICSEARCH)
-    agent ! PolyStoreQuery(Queries.Query_A_4_10, "")
+    implicit val timeout: Timeout = Timeout(10.minutes)
+    val future = agent ? PolyStoreQuery(Queries.Query_A_8_7, "")
+    val result = Await.result(future, timeout.duration)
+    val resultSet = result.asInstanceOf[Result].toResultSet
+    var rows = 0
+    while (resultSet.hasNext) {
+      resultSet.next()
+      rows += 1
+    }
+    println(s"Row Count: $rows")
 
     //val polyStoreQuery = PolystoreQueryReader.read(queryPath)
     //println(polyStoreQuery)
