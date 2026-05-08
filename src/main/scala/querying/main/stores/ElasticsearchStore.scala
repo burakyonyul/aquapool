@@ -14,6 +14,8 @@ object ElasticsearchStore {
       val creds = new BasicCredentialsProvider()
       creds.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("elastic", "admin123"))
       httpClientBuilder.setDefaultCredentialsProvider(creds)
+        .setMaxConnTotal(100)      // toplam max bağlantı (default ~10)
+        .setMaxConnPerRoute(100)   // route başına max bağlantı
     }
   }
 

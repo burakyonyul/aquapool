@@ -8,8 +8,8 @@ object PostgresqlStore {
 
   //hikariConfig.setJdbcUrl("jdbc:postgresql://localhost:5432/poly_mimic_rel")
 
-  //hikariConfig.setJdbcUrl("jdbc:postgresql://155.223.25.1:5433/poly_mimic_rel")
-  hikariConfig.setJdbcUrl("jdbc:postgresql://155.223.25.1:5433/mimic")
+  hikariConfig.setJdbcUrl("jdbc:postgresql://155.223.25.1:5433/poly_mimic_rel")
+  //hikariConfig.setJdbcUrl("jdbc:postgresql://155.223.25.1:5433/mimic")
 
   //hikariConfig.setUsername("postgres")
 
@@ -26,6 +26,8 @@ object PostgresqlStore {
   hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
 
   hikariConfig.setDriverClassName("org.postgresql.Driver")
+
+  hikariConfig.setMaximumPoolSize(100)  // default 10, 50'ye çıkar
 
   val hikariDataSource = new HikariDataSource(hikariConfig)
 

@@ -32,7 +32,7 @@ object AgentApp {
     //val query_map = HashMap(Queries.REDIS_LRANGE_MAGNESIUM -> Constants.REDIS, Queries.INFLUXDB_ITEM_OF_SUBJECT -> Constants.INFLUXDB)
     //val query_map = HashMap(Queries.REDIS_LRANGE_SEPSIS_PATIENTS -> Constants.REDIS, Queries.ELASTICSEARCH_AZOTEMIA_PATIENTS -> Constants.ELASTICSEARCH)
     implicit val timeout: Timeout = Timeout(10.minutes)
-    val future = agent ? PolyStoreQuery(Queries.Query_A_8_7, "")
+    val future = agent ? PolyStoreQuery(Queries.Query_A_2_1, "1")
     val result = Await.result(future, timeout.duration)
     val resultSet = result.asInstanceOf[Result].toResultSet
     var rows = 0

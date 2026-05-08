@@ -127,7 +127,7 @@ object AquaPoolBenchmark {
         val startTime = System.nanoTime()
 
         // ask pattern: Future döner, Await ile bekle
-        val future = agent ? PolyStoreQuery(queryObj, "")
+        val future = agent ? PolyStoreQuery(queryObj, s"${runNum}")
         val result = Try(Await.result(future, timeout.duration))
 
         val elapsedNs = System.nanoTime() - startTime

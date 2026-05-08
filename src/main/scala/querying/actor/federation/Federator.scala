@@ -14,13 +14,13 @@ import scala.collection.immutable.HashMap
 
 object Federator {
   val extractEntityId: ShardRegion.ExtractEntityId = {
-    case msg@PolyStoreQuery(queryStoreMap, _) => (queryStoreMap.hashCode.toString, msg)
+    case psq@PolyStoreQuery(_, _) => (psq.hashCode().toString, psq)
   }
 
   private val numberOfShards = 20
 
   val extractShardId: ShardRegion.ExtractShardId = {
-    case psq@PolyStoreQuery(queryStoreMap, _) => (queryStoreMap.hashCode % numberOfShards).toString
+    case psq@PolyStoreQuery(_, _) => (psq.hashCode % numberOfShards).toString
   }
 }
 

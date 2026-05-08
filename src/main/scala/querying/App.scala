@@ -78,6 +78,13 @@ object App {
     system.log.info("Polystore system has been started.")
     //println("Polystore system has been started.")
 
+    // Cluster join sonrası — başka actor'ların başlatıldığı yere
+    system.actorOf(querying.actor.MetricsListener.props, "metrics-listener")
+    system.actorOf(
+      ShardLoadReporter.props("Federator"),  // Federator = sizin shard type name
+      "shard-load-reporter"
+    )
+
     /*
     ClusterSharding(system).start(
       typeName = "Distributor",

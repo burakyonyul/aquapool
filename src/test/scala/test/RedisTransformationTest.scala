@@ -27,7 +27,7 @@ object RedisTransformationTest extends App {
     }
   }
 
-  //queryRedisAsRDF(0, "Arterial Blood Pressure*", "Magnesium", "keys")
+  queryRedisAsRDF(0, "Arterial Blood Pressure*", "Magnesium", "keys")
   //queryRedisAsRDF(1, "*Glucose*", "*Cholesterol*", "keys")
   //queryRedisAsRDF(2, "*Blood vessel*", "*alcohol and drug*", "keys")
   //queryRedisAsRDF(3, "*Cleft lip,*", "*sleep disorders*", "keys")
@@ -40,7 +40,7 @@ object RedisTransformationTest extends App {
   //queryRedisAsRDF(6, "570-100913", "1430-184067", "zrangeWithScore")
   //queryRedisAsRDF(4, "RN", "UA", "reverselrange")
   //queryRedisAsRDF(5, "9671", "8872", "reverselrange")
-  queryRedisAsRDF(6, "V3000", "7793", "reverselrange")
+  //queryRedisAsRDF(6, "V3000", "7793", "reverselrange")
 
   private def queryRedisAsRDF(database: Int, firstKey: String, secondKey: String, command: String) = {
     var firstValues: Option[Any] = None
