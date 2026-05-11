@@ -61,6 +61,15 @@ object App {
       withFallback(ConfigFactory.parseString("akka.remote.artery.canonical.port = " + port)).
       withFallback(ConfigFactory.load())
 
+    println(s"[Deney5 Check] Dispatcher parallelism: " +
+      ConfigFactory.load().getInt(
+        "akka.actor.default-dispatcher.fork-join-executor.parallelism-min"
+      ))
+    println(s"[Deney5 Check] Bucket size: " +
+      ConfigFactory.load().getInt("aquapool.join.bucket-size"))
+    println(s"[Deney5 Check] Log file: " +
+      ConfigFactory.load().getString("aquapool.join.log-file"))
+
     // Create an Akka system
     val system = ActorSystem("Querying", config)
     // Create an actor that starts the sharding and sends random messages

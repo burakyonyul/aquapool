@@ -86,7 +86,15 @@ class Federator extends Actor with ActorLogging {
       if JoinUtils.matchAnyVar(receivedResult.resultVars.asJava, result.resultVars.asJava)
     } {
       results = results.filterNot(res => res == result)
-      val bucketDistributor = context.actorOf(ParallelJoinManager.props)
+      // === Deney-5: queryId'yi PolyStoreQuery.senderPath'ten al ve
+      //              spawn edilen ParallelJoinManager'a parametre olarak ilet.
+      //              Bu sayede join_timings.csv'de hangi satırın hangi
+      //              sorguya ait olduğu net olarak belirtilir.
+      //
+      //              Backward-compat: polyStoreQuery boş ise "unknown"
+      //              kullan (normal koşullarda olmamalı, savunma amaçlı).
+      val queryId: String = polyStoreQuery.map(_.queryID).getOrElse("unknown")
+      val bucketDistributor = context.actorOf(ParallelJoinManager.props(queryId))
       bucketDistributor ! DistributeBuckets(receivedResult, result)
       resultCount -= 1
       return true
