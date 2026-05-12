@@ -3,9 +3,6 @@
 *.class
 *.log
 
-.idea/
-*.iml
-out/
 .idea/.name
 .idea/workspace.xml
 project/target/
