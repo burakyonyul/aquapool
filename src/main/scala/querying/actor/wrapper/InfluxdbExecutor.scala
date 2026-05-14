@@ -4,8 +4,8 @@ import akka.actor.{Actor, ActorLogging, ActorSystem, PoisonPill, Props}
 import akka.stream.scaladsl.Sink
 import com.influxdb.query.FluxRecord
 import org.apache.spark.util.SizeEstimator
-import querying.main.QueryingUtils
 import querying.main.stores.InfluxdbStore
+import querying.main.{LatencyLogger, QueryingUtils}
 import querying.message.{ExecuteQuery, Result}
 import querying.transformation.InfluxdbTransformer
 
@@ -29,33 +29,47 @@ class InfluxdbExecutor extends Actor with ActorLogging {
   }
 
   override def receive: Receive = {
-    case eq@ExecuteQuery(query) =>
-      //log.info("Sender path: {}, self path {}",sender().path,self.path)
+    case eq@ExecuteQuery(query, queryId) =>
       log.debug("Hash Code for Execute SERVICE Clause: [{}], and Query Value: [{}]", eq.hashCode, query)
-      val result = executeQuery(query)
+      val result = executeQuery(query, queryId)
       sender ! result.get
       val sizeInBytes = SizeEstimator.estimate(result)
       log.info("Size of the new result message sent start InfluxdbExecutor end Federator is: [{}] Bytes, and is [{}]", sizeInBytes, QueryingUtils.formatByteValue(sizeInBytes))
       self ! PoisonPill
   }
 
-  protected def executeQuery(query: String): Option[Result] = {
+  protected def executeQuery(query: String, queryId: String): Option[Result] = {
 
-    var result: Option[Result] = None
     val client = InfluxdbStore.getClient()
-    // Result is returned as a stream
-    val influxResults = client.getQueryScalaApi().query(query)
     val transformer = new InfluxdbTransformer()
+
+    // === Deney-4: Store execution start ===
+    // (InfluxDB stream tabanlı: Sink.foreach içindeki generateMeasurementResource
+    //  her record için RDF model'e ekleme yapar; saf "DB I/O" ile saf "model
+    //  inşası" ayrımı stream API'den dolayı yapılamıyor → ikisi de store
+    //  fazına dahil. transform_ms ise SPARQL eval süresidir.)
+    val tStoreStart = System.nanoTime()
+    val influxResults = client.getQueryScalaApi().query(query)
     val sink = influxResults
       .runWith(Sink.foreach[FluxRecord](
         fluxRecord => transformer.generateMeasurementResource(fluxRecord)
-      )
-      )
-    // wait to finish
+      ))
     Await.result(sink, Duration.Inf)
     client.close()
-    transformer.transformToRdfResult()
-  }
+    val tStoreEnd = System.nanoTime()
 
+    // === Deney-4: RDF transformation (final SPARQL projection) start ===
+    val tTransformStart = System.nanoTime()
+    val result = transformer.transformToRdfResult()
+    val tTransformEnd = System.nanoTime()
+
+    LatencyLogger.logExecutorPhase(
+      queryId = queryId,
+      store = "influxdb",
+      storeExecMs = (tStoreEnd - tStoreStart) / 1e6,
+      transformMs = (tTransformEnd - tTransformStart) / 1e6
+    )
+    result
+  }
 
 }

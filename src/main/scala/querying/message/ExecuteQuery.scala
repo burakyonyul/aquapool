@@ -2,7 +2,7 @@ package querying.message
 
 import play.api.libs.json.{Json, OFormat}
 
-case class ExecuteQuery(query: String)
+case class ExecuteQuery(query: String, queryId: String = "unknown")
 
 object ExecuteQuery {
 
