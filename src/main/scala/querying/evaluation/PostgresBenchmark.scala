@@ -9,31 +9,30 @@ import scala.collection.mutable.ArrayBuffer
 /**
  * PostgreSQL Benchmark Runner for AQuAPooL Evaluation
  *
- * Tüm 35 benchmark sorgusunu (28 single + 7 compound) PostgreSQL üzerinde çalıştırır.
- * Her sorgu: 3 warm-up + 10 ölçüm = 13 çalıştırma
- * Sonuçlar CSV dosyasına yazılır.
- *
- * Kullanım:
+ * Runs all 35 benchmark queries (28 single + 7 compound) on PostgreSQL.
+ * Each query: 3 warm-ups + 10 metrics = 13 runs
+ * Results are written to a CSV file. *
+ * Usage:
  * sbt "runMain PostgresBenchmark"
- * veya
+ * or
  * scala PostgresBenchmark.scala
  *
- * Çıktı: pg_benchmark_results.csv
+ * Output: pg_benchmark_results.csv
  */
 object PostgresBenchmark {
 
-  // ─── Bağlantı Ayarları ─────────────────────────────────────────────
-  val DB_URL = "jdbc:postgresql://155.223.25.1:5433/mimic" // kendi ayarına göre değiştir
-  val DB_USER = "bigdata" // kendi kullanıcı adın
-  val DB_PASS = "postgres" // kendi şifren
+  // ─── Connection Settings ─────────────────────────────────────────────
+  val DB_URL = "jdbc:postgresql://155.223.25.1:5433/mimic" // Change it according to your own settings
+  val DB_USER = "bigdata" // your own username
+  val DB_PASS = "postgres" // your own password
 
   val WARMUP_RUNS = 3
   val MEASURE_RUNS = 10
   val TOTAL_RUNS = WARMUP_RUNS + MEASURE_RUNS
   val OUTPUT_FILE = "pg_benchmark_results.csv"
 
-  // ─── Sorgu Tanımları ───────────────────────────────────────────────
-  // Her tuple: (queryId, queryCategory, sqlString)
+  // ─── Query Definitions ───────────────────────────────────────────────
+  // Each tuple: (queryId, queryCategory, sqlString)
 
   val timeSeriesQueries: Seq[(String, String, String)] = Seq(
     ("A.1.1", "TS",
@@ -148,14 +147,14 @@ object PostgresBenchmark {
       Queries.Query_A_7_7.keys.head.stripMargin)
   )
 
-  // ─── Yardımcı Fonksiyonlar ─────────────────────────────────────────
+  // ─── Auxiliary Functions ─────────────────────────────────────────
 
-  /** ResultSet'in tüm satırlarını consume eder ve satır sayısını döner. */
+  /** Consumes all rows of the ResultSet and returns the number of rows.. */
   def consumeResultSet(rs: ResultSet): Int = {
     val colCount = rs.getMetaData.getColumnCount
     var rowCount = 0
     while (rs.next()) {
-      // Tüm sütunları oku — sadece consume etmek için
+      // Read all columns — just for consuming.
       var col = 1
       while (col <= colCount) {
         rs.getObject(col)
@@ -166,7 +165,7 @@ object PostgresBenchmark {
     rowCount
   }
 
-  /** Tek bir sorguyu çalıştırır ve (elapsed_ns, rowCount) döner. */
+  /** It runs a single query and returns (elapsed_ns, rowCount). */
   def executeAndMeasure(conn: Connection, sql: String): (Long, Int) = {
     val stmt = conn.createStatement()
     val startTime = System.nanoTime()
@@ -178,17 +177,17 @@ object PostgresBenchmark {
     (elapsedNs, rowCount)
   }
 
-  /** PostgreSQL session cache temizleme */
+  /** Clearing the PostgreSQL session cache. */
   def clearSessionCache(conn: Connection): Unit = {
     val stmt = conn.createStatement()
     stmt.execute("DISCARD ALL;")
     stmt.close()
   }
 
-  // ─── Ana Program ──────────────────────────────────────────────────
+  // ─── Main Program ──────────────────────────────────────────────────
 
   def main(args: Array[String]): Unit = {
-    // Tüm sorguları birleştir
+    // Combine all queries.
     val allQueries = timeSeriesQueries ++ keyValueQueries ++ documentSearchQueries ++ compoundQueries
 
     println(s"PostgreSQL Benchmark Runner")
@@ -197,18 +196,18 @@ object PostgresBenchmark {
     println(s"Output file: $OUTPUT_FILE")
     println("=" * 70)
 
-    // Bağlantıyı aç — tüm deney boyunca açık kalacak
+    // Turn the connection on — it will stay open throughout the entire experiment.
     val conn = PostgresqlStore.hikariDataSource.getConnection
     println(s"Connected to: $DB_URL")
 
-    // CSV dosyasını aç
+    // Open the CSV file
     val csvWriter = new PrintWriter(new FileWriter(OUTPUT_FILE))
     csvWriter.println("system,queryId,category,run,elapsed_ns,elapsed_ms,row_count")
 
     for ((queryId, category, sql) <- allQueries) {
       println(s"\n--- $queryId ($category) ---")
 
-      // Bu sorgu grubunun başında cache temizle
+      // Clear cache at the beginning of the query group
       clearSessionCache(conn)
 
       val measuredTimes = new ArrayBuffer[Long]()
@@ -223,13 +222,13 @@ object PostgresBenchmark {
         println(f"  Run $runNum%2d [$runType%7s]: $elapsedMs%12.2f ms ($rowCount rows)")
 
         if (runNum > WARMUP_RUNS) {
-          // Sadece ölçüm run'larını CSV'ye yaz
+          // Just write the measurement runs to CSV.
           csvWriter.println(s"PG,$queryId,$category,$runNum,$elapsedNs,${elapsedMs.toLong},$rowCount")
           measuredTimes += elapsedNs
         }
       }
 
-      // Bu sorgunun istatistiklerini hesapla ve ekrana bas
+      // Calculate and display the statistics for this query.
       val timesMs = measuredTimes.map(_ / 1000000.0)
       val n = timesMs.size
       val mean = timesMs.sum / n
@@ -244,6 +243,6 @@ object PostgresBenchmark {
 
     println("\n" + "=" * 70)
     println(s"Done. Results saved to: $OUTPUT_FILE")
-    println("Bu CSV dosyasını Python istatistik scripti ile işleyebilirsiniz.")
+    println("You can process this CSV file with a Python statistics script.")
   }
 }

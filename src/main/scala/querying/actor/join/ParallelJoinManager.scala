@@ -1,6 +1,6 @@
 package querying.actor.join
 
-import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.hp.hpl.jena.query.{ResultSet, ResultSetFactory, ResultSetFormatter}
 import com.hp.hpl.jena.sparql.core.Var
 import com.hp.hpl.jena.sparql.engine.binding.Binding
@@ -17,12 +17,11 @@ import scala.collection.immutable.HashMap
 object ParallelJoinManager {
 
   // ====================================================================
-  // Deney-5: bucketSize artık application.conf'tan okunuyor.
+  // Experiment-5: bucketSize is now read from application.conf. //
+  // Can be overridden with a system property or environment:
+  // sbt -Daquapool.join.bucket-size=50 "runMain ..."
   //
-  // System property veya environment ile override edilebilir:
-  //   sbt -Daquapool.join.bucket-size=50 "runMain ..."
-  //
-  // Config yoksa default 100 (orijinal davranış).
+  // Default 100 if no config exists (original behavior).
   // ====================================================================
   val bucketSize: Int = {
     val cfg = ConfigFactory.load()
@@ -33,15 +32,14 @@ object ParallelJoinManager {
   }
 
   // ====================================================================
-  // Deney-5: Join phase timing & actor counting infrastructure
+  // Experiment-5: Join phase timing & actor counting infrastructure
   //
-  // Her ParallelJoinManager instance'ı kendi join phase'i için
-  // toplam wall-clock süreyi ve spawn edilen HashJoinPerformer sayısını
-  // ölçer. Sonuçlar CSV'ye append edilir.
-  //
-  // CSV path system property ile değiştirilebilir:
-  //   -Daquapool.join.log-file=/path/to/file.csv
-  // Default: ./join_timings.csv (çalışma dizini)
+  // Each ParallelJoinManager instance measures
+  // the total wall-clock time and the number of spawned HashJoinPerformers for its join phase.
+  // The results are appended to a CSV.
+  // The CSV path can be changed with the system property:
+  // -Daquapool.join.log-file=/path/to/file.csv
+  // Default: ./join_timings.csv (working directory)
   //
   // CSV format:
   //   timestamp_ms, query_id, thread_pool_size, bucket_size,

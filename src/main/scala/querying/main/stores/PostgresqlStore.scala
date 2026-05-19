@@ -27,7 +27,7 @@ object PostgresqlStore {
 
   hikariConfig.setDriverClassName("org.postgresql.Driver")
 
-  hikariConfig.setMaximumPoolSize(100)  // default 10, 50'ye çıkar
+  hikariConfig.setMaximumPoolSize(100)  // The default is 10, increase it to 50.
 
   val hikariDataSource = new HikariDataSource(hikariConfig)
 

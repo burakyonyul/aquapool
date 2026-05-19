@@ -43,11 +43,11 @@ class InfluxdbExecutor extends Actor with ActorLogging {
     val client = InfluxdbStore.getClient()
     val transformer = new InfluxdbTransformer()
 
-    // === Deney-4: Store execution start ===
-    // (InfluxDB stream tabanlı: Sink.foreach içindeki generateMeasurementResource
-    //  her record için RDF model'e ekleme yapar; saf "DB I/O" ile saf "model
-    //  inşası" ayrımı stream API'den dolayı yapılamıyor → ikisi de store
-    //  fazına dahil. transform_ms ise SPARQL eval süresidir.)
+    // === Experiment-4: Store execution start ===
+    // (InfluxDB stream-based: generateMeasurementResource inside Sink.foreach
+    // adds to the RDF model for each record; the distinction between pure "DB I/O" and pure "model
+    // construction" cannot be made due to the stream API → both are included in the store
+    // phase. transform_ms is the SPARQL evolution time.)
     val tStoreStart = System.nanoTime()
     val influxResults = client.getQueryScalaApi().query(query)
     val sink = influxResults
@@ -58,7 +58,7 @@ class InfluxdbExecutor extends Actor with ActorLogging {
     client.close()
     val tStoreEnd = System.nanoTime()
 
-    // === Deney-4: RDF transformation (final SPARQL projection) start ===
+    // === Experiment-4: RDF transformation (final SPARQL projection) start ===
     val tTransformStart = System.nanoTime()
     val result = transformer.transformToRdfResult()
     val tTransformEnd = System.nanoTime()

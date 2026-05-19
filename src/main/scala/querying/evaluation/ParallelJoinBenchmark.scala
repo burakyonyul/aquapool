@@ -13,70 +13,62 @@ import scala.concurrent.{Await, ExecutionContext}
 import scala.util.{Failure, Success, Try}
 
 /**
- * =====================================================================
- * Deney-5: Parallel GRACE Hash Join Scalability Benchmark
- * =====================================================================
+ * ====================================================================
+ * Parallel GRACE Hash Join Scalability Benchmark
+ * ======================================================================== *
+ * OBJECTIVE:
+ * To numerically demonstrate that AQuAPooL's parallel hash join implementation provides a net speedup compared to the sequential baseline.
+ * *
+ * STRATEGY:
+ * The same query, the same code, but Akka dispatcher fork-join thread
+ * is run in environments where the pool size varies from 1, 2, 4, 8, to 16.
  *
- * AMAÇ:
- *   AQuAPooL'un parallel hash join uygulamasının sequential baseline'a
- *   göre net hızlanma (speedup) sağladığını sayısal olarak göstermek.
+ * - Thread pool = 1 ≡ classic sequential GRACE hash join
+ * - Thread pool = 16 ≡ fully parallel implementation
  *
- * STRATEJİ:
- *   Aynı sorgu, aynı kod, fakat Akka dispatcher fork-join thread
- *   pool size'ı 1, 2, 4, 8, 16 olarak değişen ortamlarda çalıştırılır.
+ * MEASUREMENT and QUERY DEFINITION:
+ * The senderPath field of PolyStoreQuery is used as query_id.
+ * Format: "<phase>|<query>|<run>"
+ * phase ∈ {warmup-system, warmup, measure}
+ * query ∈ {A.8.5, A.8.1, A.8.7}
+ * run ∈ sequential number
+ * This string passes through the Federationator → ParallelJoinManager chain
+ * and is written to the query_id column in join_timings.csv.
  *
- *   - Thread pool = 1  ≡  klasik sıralı GRACE hash join
- *   - Thread pool = 16 ≡  tam paralel uygulama
+ * IMPORTANT: Since A.8.7 is multi-stage, more than one join row can be created with the same query_id (one for each stage). In the analysis, we group these (query_id) and perform a summation. *
+ * QUERY SELECTION:
+ * Join-heavy compound queries:
+ * - A.8.5 (small result set, low speedup expectation)
+ * - A.8.1 (medium result set, medium speedup expectation)
+ * - A.8.7 (large multi-stage, high speedup expectation)
  *
- * ÖLÇÜM ve SORGU TANIMLAMA:
- *   PolyStoreQuery'nin senderPath alanı query_id olarak kullanılır.
- *   Format: "<phase>|<query>|<run>"
- *     phase ∈ {warmup-system, warmup, measure}
- *     query  ∈ {A.8.5, A.8.1, A.8.7}
- *     run    ∈ ardışık sayı
- *   Bu string Federator → ParallelJoinManager zincirinden geçerek
- *   join_timings.csv'ye query_id sütununa yazılır.
+ * EXECUTION:
+ * # Restart the cluster node (App.scala) for each thread pool level
+ * # in a separate sbt session:
  *
- *   ÖNEMLİ: A.8.7 multi-stage olduğu için aynı query_id'yle birden
- *   fazla join satırı oluşabilir (her stage için bir tane). Analizde
- *   bunları (query_id) ile gruplayıp toplama yaparız.
+ * # Terminal-1 (cluster node, remote or local):
+ * sbt -J-Xmx8g
+ * -Daquapool.dispatcher.parallelism=1
+ * -Daquapool.join.log-file=join_threads_1.csv
+ * "runMain querying.App 155.223.25.1 2551"
  *
- * SORGU SEÇİMİ:
- *   Join-heavy compound sorgular:
- *     - A.8.5  (küçük result set,   düşük speedup beklentisi)
- *     - A.8.1  (orta result set,    orta speedup beklentisi)
- *     - A.8.7  (büyük multi-stage,  yüksek speedup beklentisi)
+ * # Terminal-2 (benchmark client — plain):
+ * sbt -J-Xmx4g "runMain querying.evaluation.ParallelJoinBenchmark"
  *
- * ÇALIŞTIRMA:
- *   # Her thread pool seviyesi için cluster node'unu (App.scala)
- *   # ayrı sbt oturumunda yeniden başlatın:
- *
- *   # Terminal-1 (cluster node, uzak veya yerel):
- *   sbt -J-Xmx8g \
- *       -Daquapool.dispatcher.parallelism=1 \
- *       -Daquapool.join.log-file=join_threads_1.csv \
- *       "runMain querying.App 155.223.25.1 2551"
- *
- *   # Terminal-2 (benchmark istemci — sade):
- *   sbt -J-Xmx4g "runMain querying.evaluation.ParallelJoinBenchmark"
- *
- *   # ... 2, 4, 8, 16 için tekrarla. Her sefer yalnızca App.scala'nın
- *   # -D bayrakları değişir; benchmark komutu aynı kalır.
- *
- * BUCKET SIZE BONUS DENEY:
- *   Yetersiz speedup durumunda cluster node'u:
- *     -Daquapool.dispatcher.parallelism=16 \
- *     -Daquapool.join.bucket-size=50 \
- *     -Daquapool.join.log-file=join_threads_16_bucket50.csv
- *   ile başlatın; benchmark komutu yine aynı.
- *
- * ÖN KOŞUL:
- *   - AQuAPooL cluster node ayağa kalkmış olmalı
- *   - ParallelJoinManager.scala'nın v2 hâli (queryId parametreli) ve
- *     Federator.scala'nın v2 hâli (queryId iletici) derlenmiş olmalı
- *   - application.conf'a default-dispatcher ve aquapool.join blokları
- *     eklenmiş olmalı (parallelism-factor = 1.0 KRİTİK)
- * =====================================================================
+ * # ... Repeat for 2, 4, 8, 16. Each time only the App.scala
+ * # -D flags change; the benchmark command remains the same. *
+ * BUCKET SIZE BONUS EXPERIMENT:
+ * In case of insufficient speedup, start the cluster node with:
+ * -Daquapool.dispatcher.parallelism=16 \
+ * -Daquapool.join.bucket-size=50 \
+ * -Daquapool.join.log-file=join_threads_16_bucket50.csv
+ * ; the benchmark command remains the same. *
+ * PREREQUISITE:
+ * - The AQuAPooL cluster node must be up and running.
+ * - Version 2 of ParallelJoinManager.scala (with queryId parameter) and
+ * Version 2 of Federator.scala (queryId forwarder) must be compiled.
+ * - The default-dispatcher and aquapool.join blocks must be added to application.conf (parallelism-factor = 1.0 CRITICAL).
+ * ======================================================================
  */
 object ParallelJoinBenchmark {
 
@@ -86,17 +78,16 @@ object ParallelJoinBenchmark {
   val MEASURE_RUNS = 10
 
   // Join-heavy compound sorgular
-  val joinHeavyQueries: Seq[(String, Map[String, String])] = Seq(
+  val joinHeavyQueries = Seq(
     ("A.8.5", Queries.Query_A_8_5),  // Redis + PG, küçük result set
     ("A.8.1", Queries.Query_A_8_1),  // Redis + InfluxDB, orta result set
     ("A.8.7", Queries.Query_A_8_7)   // Redis + PG + ES + InfluxDB (multi-stage)
   )
 
-  /** query_id formatı: "<phase>|<query>|<run>"
-   *  Pipe ayraç olarak seçildi çünkü sorgu adlarında (A.8.5) nokta var,
-   *  benchmark'ta `-` zaten Agent isimlendirmesinde kullanılıyor.
-   */
-  def queryIdOf(phase: String, qName: String, run: Int): String =
+  /** query_id format: "<phase>|<query>|<run>"
+   * Pipe was chosen as a separator because query names (A.8.5) contain periods,
+   * `-` is already used in Agent naming in the benchmark. */
+  def queryIdOf(phase: String, qName: String, run: Int) =
     s"$phase|$qName|$run"
 
   def main(args: Array[String]): Unit = {
@@ -105,12 +96,12 @@ object ParallelJoinBenchmark {
     val port      = if (args.isDefinedAt(1)) args(1) else "2553"
 
     println("=" * 70)
-    println("  Deney-5: Parallel Join Scalability Benchmark")
+    println("  Parallel Join Scalability Benchmark")
     println("=" * 70)
-    println("  NOT: Bu istemci tarafıdır. Dispatcher parametreleri")
-    println("       App.scala (cluster node) çalıştırılırken verilmeli.")
-    println("       Aşağıdaki değerler istemci JVM'in default'larıdır —")
-    println("       cluster node'un gerçek değerleri farklı olabilir.")
+    println("  NOTE: This is the client side. Dispatcher parameters.")
+    println("       This information must be provided when running App.scala (cluster node).")
+    println("       The following values are the client JVM defaults. —")
+    println("       The actual values of the cluster node may be different..")
     println("=" * 70)
 
     val cfg = ConfigFactory.load()
@@ -124,7 +115,7 @@ object ParallelJoinBenchmark {
     println(s"  total queries:   ${joinHeavyQueries.size}")
     println("=" * 70)
 
-    // Actor system başlat (ScalabilityBenchmark ile aynı pattern)
+    // Start the actor system (same pattern as Scalability Benchmark)
     val sysConfig = ConfigFactory.parseString(s"akka.remote.artery.canonical.hostname = $ipAddress")
       .withFallback(ConfigFactory.parseString(s"akka.remote.artery.canonical.port = $port"))
       .withFallback(ConfigFactory.load("agent.conf"))
@@ -137,10 +128,10 @@ object ParallelJoinBenchmark {
       "shared-cluster-client"
     )
     Thread.sleep(2000)
-    println("  Paylaşımlı ClusterClient oluşturuldu.\n")
+    println("  A shared cluster client was created..\n")
 
     // ─── Genel sistem warm-up: JIT/cache ısınması
-    println("[Sistem Warm-up] JIT/cache ısıtması için 3 sorgu...")
+    println("[System Warm-up] 3 queries for JIT/cache warm-up...")
     for (i <- 1 to 3) {
       val (qName, qMap) = joinHeavyQueries(i % joinHeavyQueries.size)
       val qid = queryIdOf("warmup-system", qName, i)
@@ -150,19 +141,19 @@ object ParallelJoinBenchmark {
         timeout.duration
       ))
       warmupAgent ! PoisonPill
-      println(s"  sistem-warmup $i/3 ($qName, qid=$qid): " +
+      println(s"  system-warmup $i/3 ($qName, qid=$qid): " +
         (if (result.isSuccess) "OK" else "HATA"))
       Thread.sleep(1000)
     }
-    println("  Sistem hazır.\n")
+    println("  System is ready.\n")
 
-    // ─── Her sorgu için warm-up + measurement
+    // ─── Warm-up and measurement for each query.
     for ((qName, qMap) <- joinHeavyQueries) {
 
-      println(s"┌─── Sorgu: $qName ───┐")
+      println(s"┌─── Query: $qName ───┐")
 
-      // Sorguya özel warm-up
-      println(f"  [warm-up: $WARMUP_RUNS run] (CSV'ye yazılır; query_id'de 'warmup' var → analizde filtrelenir)")
+      // Interrogation-specific warm-up
+      println(f"  [warm-up: $WARMUP_RUNS run] (It is written to a CSV; query_id has 'warmup' → it is filtered in the analysis.)")
       for (i <- 1 to WARMUP_RUNS) {
         val qid = queryIdOf("warmup", qName, i)
         val agent = system.actorOf(Agent.props(sharedClusterClient), s"WarmupAgent-${qName.replace(".","_")}-$i")
@@ -174,8 +165,8 @@ object ParallelJoinBenchmark {
         Thread.sleep(2000)
       }
 
-      // Measurement run'ları
-      println(f"  [measure: $MEASURE_RUNS run] (CSV'ye yazılır; query_id'de 'measure' var → analizde alınır)")
+      // Measurement runs
+      println(f"  [measure: $MEASURE_RUNS run] (It is written to a CSV; query_id contains 'measure' → it is retrieved in the analysis.)")
       for (i <- 1 to MEASURE_RUNS) {
         val qid = queryIdOf("measure", qName, i)
         val agent = system.actorOf(Agent.props(sharedClusterClient), s"MeasureAgent-${qName.replace(".","_")}-$i")
@@ -197,12 +188,12 @@ object ParallelJoinBenchmark {
 
     // ─── Kapatma
     println("=" * 70)
-    println("  Benchmark tamamlandı.")
-    println("  Cluster node'un çalışma dizininde join_threads_*.csv'yi kontrol edin.")
-    println("  CSV'de query_id sütunundaki etiket kullanılarak:")
-    println("    - 'warmup-system|*' satırları analiz dışı bırakılır")
-    println("    - 'warmup|*' satırları analiz dışı bırakılır")
-    println("    - 'measure|<query>|<run>' satırları kullanılır")
+    println("  Benchmark completed.")
+    println("  Check the join_threads_*.csv file in the cluster node's working directory.")
+    println("  Using the tag in the query_id column in the CSV:")
+    println("    - Lines containing 'warmup-system|*' are excluded from analysis.")
+    println("    - Lines containing 'warmup|*' are excluded from analysis.")
+    println("    - The lines 'measure|<query>|<run>' are used.")
     println("=" * 70)
 
     sharedClusterClient ! PoisonPill

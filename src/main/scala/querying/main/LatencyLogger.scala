@@ -6,30 +6,26 @@ import java.io.{FileWriter, PrintWriter}
 import java.nio.file.{Files, Paths}
 
 /**
- * =====================================================================
- * Deney-4: Latency Breakdown CSV Logger
- * =====================================================================
+ * ===================================================================
+ * Latency Breakdown CSV Logger
+ * =======================================================================
  *
- * İki ayrı log dosyasını yönetir:
+ * Manages two separate log files:
  *
- * 1) executor_latency.csv — Her Executor (Redis/PG/InfluxDB/ES) için
- *    her sorguda iki fazı ayrı ayrı loglar:
- *      - store_exec_ms:  backend sorgusu süresi (DB içinde geçen zaman)
- *      - transform_ms:   backend response → polystore global RDF model
- *                        dönüşüm maliyeti
+ * 1) executor_latency.csv — For each Executor (Redis/PG/InfluxDB/ES)
+ * logs two phases separately in each query: * - store_exec_ms: backend query duration (time spent in the DB)
+ * - transform_ms: Backend response → Polystore global RDF model
+ * Conversion cost
  *
- * 2) federation_latency.csv — Federator için her sorgunun toplam süresi
- *    ve dispatch süresi:
- *      - total_ms:       PolyStoreQuery alınması → final Result gönderimi
- *      - dispatch_ms:    PolyStoreQuery alınması → tüm Executor'lere
- *                        ExecuteQuery dağıtılması
+ * 2) federation_latency.csv — Total time for each query for the federator
+ * and dispatch time:
+ * - total_ms: Getting PolyStoreQuery → Sending final Result
+ * - dispatch_ms: Getting PolyStoreQuery → Distributing ExecuteQuery to all Executors
  *
- * CSV dosyaları append modunda yazılır. Cluster node JVM'inin çalışma
- * dizininde oluşur (system property ile değiştirilebilir).
+ * CSV files are written in append mode. They are created in the working directory of the cluster node JVM (can be changed with the system property).
  *
- * Sistem property'leri:
- *   -Daquapool.latency.executor-log=/path/to/executor.csv
- *   -Daquapool.latency.federation-log=/path/to/federation.csv
+ * System properties: * -Daquapool.latency.executor-log=/path/to/executor.csv
+ * -Daquapool.latency.federation-log=/path/to/federation.csv
  */
 object LatencyLogger {
 

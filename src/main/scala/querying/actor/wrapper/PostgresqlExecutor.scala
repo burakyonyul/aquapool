@@ -38,13 +38,13 @@ class PostgresqlExecutor extends Actor with ActorLogging {
   protected def executeQuery(query: String, queryId: String): Option[Result] = {
     var result: Option[Result] = None
     try {
-      // === Deney-4: Store execution start ===
+      // === Experiment-4: Store execution start ===
       val tStoreStart = System.nanoTime()
       val stm = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)
       val rs: ResultSet = stm.executeQuery(query)
       val tStoreEnd = System.nanoTime()
 
-      // === Deney-4: RDF transformation (global model'e dönüşüm) start ===
+      // === Experiment-4: RDF transformation (transformation to global model) start ===
       val tTransformStart = System.nanoTime()
       result = PostgresqlTransformer.transformToRdfResult(rs)
       val tTransformEnd = System.nanoTime()

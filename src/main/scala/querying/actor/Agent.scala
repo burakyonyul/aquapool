@@ -5,12 +5,12 @@ import akka.cluster.client.ClusterClient
 import querying.message.{PolyStoreQuery, Result}
 
 object Agent {
-  // Orijinal props — geriye dönük uyumluluk için
-  // Bu versiyonda Agent kendi ClusterClient'ını oluşturur (eski davranış)
+  // Original props — for backward compatibility.
+  // In this version, the Agent creates its own ClusterClient (old behavior)
   def props: Props = Props(new Agent(None))
 
-  // Yeni props — paylaşımlı ClusterClient ile
-  // Tüm Agent'lar aynı ClusterClient'ı kullanır, TCP bağlantı çoğalması önlenir
+  // New props — with shared ClusterClient
+  // All Agents use the same ClusterClient, TCP connection duplication is prevented
   def props(sharedClient: ActorRef): Props = Props(new Agent(Some(sharedClient)))
 }
 
@@ -22,7 +22,7 @@ class Agent(sharedClusterClient: Option[ActorRef]) extends Actor with ActorLoggi
     case psq@PolyStoreQuery(_, queryID) =>
       start = System.nanoTime()
 
-      // Paylaşımlı client varsa onu kullan, yoksa yeni oluştur (eski davranış)
+      // If you have a shared client, use it; otherwise, create a new one (old behavior)
       val clusterClient = sharedClusterClient.getOrElse {
         import akka.cluster.client.ClusterClientSettings
         context.system.actorOf(

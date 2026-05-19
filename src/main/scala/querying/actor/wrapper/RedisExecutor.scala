@@ -47,7 +47,7 @@ class RedisExecutor extends Actor with ActorLogging {
       return None
     }
 
-    // === Deney-4: Store execution start ===
+    // === Experiment-4: Store execution start ===
     val tStoreStart = System.nanoTime()
 
     for (key <- keys) {
@@ -61,7 +61,7 @@ class RedisExecutor extends Actor with ActorLogging {
     }
 
     val tStoreEnd = System.nanoTime()
-    // === Deney-4: RDF transformation (global model'e dönüşüm) start ===
+    // === Experiment-4: RDF transformation (transformation to global model) start ===
     val tTransformStart = System.nanoTime()
 
     val result = RedisTransformer.transformToRdfResult(database, operation, resultMap)

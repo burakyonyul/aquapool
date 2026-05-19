@@ -37,14 +37,14 @@ class ElasticsearchExecutor extends Actor with ActorLogging {
   protected def executeQuery(query: String, queryId: String): Option[Result] = {
     var result: Option[Result] = None
 
-    // === Deney-4: Store execution start ===
+    // === Experiment-4: Store execution start ===
     val tStoreStart = System.nanoTime()
     val resp = ElasticsearchStore.client.execute {
       search("noteevents").rawQuery(query)
     }.await
     val tStoreEnd = System.nanoTime()
 
-    // === Deney-4: RDF transformation (global model'e dönüşüm) start ===
+    // === Experiment-4: RDF transformation (transformation to global model) start ===
     val tTransformStart = System.nanoTime()
     resp match {
       case failure: RequestFailure => println("We failed " + failure.error)

@@ -58,7 +58,7 @@ class MetricsListener extends Actor with ActorLogging {
   private val selfAddress = Cluster(context.system).selfAddress
   private val extension = ClusterMetricsExtension(context.system)
 
-  // ─── CSV dosyası: her node ayrı dosya yazar ────────────────────────
+  // ─── CSV file: each node writes a separate file. ────────────────────────
   private val host = Option(selfAddress.host).getOrElse("localhost")
   private val port = selfAddress.port.getOrElse(0)
   private val csvPath = s"metrics_${host}_$port.csv"
@@ -84,12 +84,12 @@ class MetricsListener extends Actor with ActorLogging {
 
   def receive: Receive = {
     case ClusterMetricsChanged(clusterMetrics) =>
-      // Sadece kendi node'umuzun metric'lerini yazıyoruz; diğer node
-      // zaten kendi dosyasına yazıyor olacak.
+      // We only write the metrics of our own node; the other node
+      // will already be writing to its own file.
       clusterMetrics.filter(_.address == selfAddress).foreach(writeRow)
 
     case _: CurrentClusterState =>
-    // Cluster up event — yoksay
+    // Cluster up event — ignore
   }
 
   private def writeRow(nm: NodeMetrics): Unit = {
@@ -103,7 +103,7 @@ class MetricsListener extends Actor with ActorLogging {
         cpuLoad = load
         cpuComb = combined.getOrElse(-1.0)
         procs = processors
-      case _ => // CPU bilgisi yoksa varsayılan kalır
+      case _ => // If no CPU information is available, the default setting will remain.
     }
 
     var used: Double = -1.0
@@ -114,7 +114,7 @@ class MetricsListener extends Actor with ActorLogging {
         used = u.doubleValue / (1024 * 1024)
         committed = c.doubleValue / (1024 * 1024)
         max = m.map(_.doubleValue / (1024 * 1024)).getOrElse(-1.0)
-      case _ => // Heap bilgisi yoksa varsayılan kalır
+      case _ => // If there is no heap information, the default remains.
     }
 
     writer.println(

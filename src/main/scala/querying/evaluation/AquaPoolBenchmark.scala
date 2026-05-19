@@ -16,18 +16,18 @@ import scala.util.{Failure, Success, Try}
 /**
  * AQuAPooL Benchmark Runner
  *
- * Tüm 35 benchmark sorgusunu AQuAPooL polystore üzerinden çalıştırır.
- * Her sorgu: 3 warm-up + 10 ölçüm = 13 çalıştırma
- * Sonuçlar CSV dosyasına yazılır.
+ * Runs all 35 benchmark queries from the AQuAPooL polystore.
+ * Each query: 3 warm-ups + 10 measurements = 13 runs
+ * Results are written to a CSV file.
  *
- * ask pattern ile senkron bekleme yapılır:
- *   - agent ? PolyStoreQuery(...) → Future döner
- *   - Await.result ile sonuç beklenir
- *   - Zamanlama: mesaj gönderiminden sonuç alımına kadar
+ * Synchronous waiting is done with the ask pattern:
+ * - agent ? PolyStoreQuery(...) → returns Future
+ * - Result is awaited with Await.result
+ * - Timing: from message sending to result receiving
  *
- * Kullanım:
+ * Usage:
  * sbt "runMain querying.AquaPoolBenchmark"
- * veya
+ * or
  * sbt "runMain querying.AquaPoolBenchmark 192.168.1.10 2553"
  */
 object AquaPoolBenchmark {
@@ -37,10 +37,10 @@ object AquaPoolBenchmark {
   val TOTAL_RUNS = WARMUP_RUNS + MEASURE_RUNS
   val OUTPUT_FILE = "aq_benchmark_results.csv"
 
-  // Timeout: en uzun sorgu için yeterli olmalı.
-  // Time-series sorgular uzun sürebilir (A.2.1 gibi),
-  // compound sorgular da uzun sürebilir.
-  // Güvenli bir değer olarak 10 dakika ayarlandı.
+  // Timeout: Should be sufficient for the longest query.
+  // Time-series queries can take a long time (like A.2.1),
+  // Compound queries can also take a long time.
+  // 10 minutes is set as a safe value.
   implicit val timeout: Timeout = Timeout(10.minutes)
 
   def main(args: Array[String]): Unit = {
@@ -54,17 +54,16 @@ object AquaPoolBenchmark {
     val system = ActorSystem("BenchmarkRunner", config)
     val agent = system.actorOf(Agent.props, "BenchmarkAgent")
 
-    // ─── Sorgu Tanımları ─────────────────────────────────────────
-    // Queries object'inden sorgu sabitlerini kullan.
-    // Aşağıdaki mapping'i kendi Queries.scala dosyandaki sabitlere göre güncelle.
-    //
+    // ─── Query Definitions ──────────────────────────────────────────
+    // Use query constants from the Queries object.
+    // Update the following mapping according to the constants in your Queries.scala file.
     // Format: (queryId, category, querySabit)
-    // queryId: CSV'de ve tablolarda kullanılacak isim
+    // queryId: Name to be used in CSV and tables
     // category: TS=TimeSeries, KV=KeyValue, DS=DocSearch, CQ=Compound
-    // querySabit: Queries object'indeki HashMap veya sorgu objesi
+    // querySabit: HashMap or query object in the Queries object
 
     val allQueries: Seq[(String, String, Map[String, String])] = Seq(
-      // ─── Time-Series Single Queries (A.2.x → InfluxDB üzerinden) ───
+      // ─── Time-Series Single Queries (via A.2.x → InfluxDB) ───
       ("A.2.1", "TS", Queries.Query_A_2_1),
       ("A.2.2", "TS", Queries.Query_A_2_2),
       ("A.2.3", "TS", Queries.Query_A_2_3),
@@ -79,7 +78,7 @@ object AquaPoolBenchmark {
       ("A.2.12", "TS", Queries.Query_A_2_12),
       ("A.2.13", "TS", Queries.Query_A_2_13),
 
-      // ─── Key-Value Single Queries (A.4.x → Redis üzerinden) ────
+      // ─── Key-Value Single Queries (via A.4.x → Redis) ────
       ("A.4.1", "KV", Queries.Query_A_4_1),
       ("A.4.2", "KV", Queries.Query_A_4_2),
       ("A.4.3", "KV", Queries.Query_A_4_3),
@@ -126,16 +125,15 @@ object AquaPoolBenchmark {
 
         val startTime = System.nanoTime()
 
-        // ask pattern: Future döner, Await ile bekle
+        // ask pattern: Future returns, wait with Await
         val future = agent ? PolyStoreQuery(queryObj, s"${runNum}")
         val result = Try(Await.result(future, timeout.duration))
 
         val elapsedNs = System.nanoTime() - startTime
 
-        // Sonuçtan satır sayısını çıkar
-        // NOT: Burayı kendi result tipine göre güncelle.
-        // Federator'ın döndürdüğü mesaj tipine bağlı olarak
-        // row count'u çıkarman gerekebilir.
+        // Subtract the row count from the result.
+        // NOTE: Update this according to your result type.
+        // Depending on the message type returned by the federator, you may need to subtract the row count.
         val rowCount = result match {
           case Success(r) => extractRowCount(r)
           case Failure(ex) =>
@@ -153,7 +151,7 @@ object AquaPoolBenchmark {
         }
       }
 
-      // İstatistikleri hesapla
+      // Calculate the statistics.
       if (measuredTimes.nonEmpty) {
         val timesMs = measuredTimes.map(_ / 1000000.0)
         val n = timesMs.size
@@ -176,13 +174,10 @@ object AquaPoolBenchmark {
   }
 
   /**
-   * Federator'dan dönen sonuç mesajından satır sayısını çıkar.
-   *
-   * NOT: Bu fonksiyonu kendi result tipine göre güncelle.
-   * Federator'ın döndürdüğü mesaj tipi ne ise (örn. List, Seq,
-   * PolyStoreResult, vb.) ona göre pattern match yap.
-   *
-   * Örnekler:
+   * Extract the number of rows from the result message returned by the federator. *
+   * NOTE: Update this function according to your own result type. * Match the pattern according to the message type returned by the federator (e.g., List, Seq,
+   * PolyStoreResult, etc.). *
+   * Examples:
    * case list: List[_] => list.size
    * case result: PolyStoreResult => result.rows.size
    * case map: Map[_, _] => map.size

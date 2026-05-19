@@ -61,13 +61,13 @@ object App {
       withFallback(ConfigFactory.parseString("akka.remote.artery.canonical.port = " + port)).
       withFallback(ConfigFactory.load())
 
-    println(s"[Deney5 Check] Dispatcher parallelism: " +
+    println(s"Dispatcher parallelism: " +
       ConfigFactory.load().getInt(
         "akka.actor.default-dispatcher.fork-join-executor.parallelism-min"
       ))
-    println(s"[Deney5 Check] Bucket size: " +
+    println(s"Bucket size: " +
       ConfigFactory.load().getInt("aquapool.join.bucket-size"))
-    println(s"[Deney5 Check] Log file: " +
+    println(s"Log file: " +
       ConfigFactory.load().getString("aquapool.join.log-file"))
 
     // Create an Akka system
@@ -87,7 +87,7 @@ object App {
     system.log.info("Polystore system has been started.")
     //println("Polystore system has been started.")
 
-    // Cluster join sonrası — başka actor'ların başlatıldığı yere
+    // After a cluster join — where other actors are launched
     system.actorOf(querying.actor.MetricsListener.props, "metrics-listener")
     system.actorOf(
       ShardLoadReporter.props("Federator"),  // Federator = sizin shard type name

@@ -13,34 +13,33 @@ import scala.concurrent.{Await, ExecutionContext}
 import scala.util.{Failure, Success, Try}
 
 /**
- * =====================================================================
- * Deney-4: Latency Breakdown Benchmark
- * =====================================================================
+ * ====================================================================
+ * Latency Breakdown Benchmark
+ * =======================================================================
  *
- * AMAÇ:
- * Her compound sorgunun toplam yürütme süresini 4 faza ayırmak:
- *     1. Store Execution     — backend DB sorgusu (per-store)
- *        2. RDF Transformation  — polystore global model'e dönüşüm
- *        3. Parallel Hash Join  — ParallelJoinManager süresi
- *        4. Federation Overhead — dispatch + aggregation + messaging
+ * OBJECTIVE:
+ * To divide the total execution time of each compound query into 4 phases:
+ * 1. Store Execution — backend DB query (per-store)
+ * 2. RDF Transformation — transformation to polystore global model
+ * 3. Parallel Hash Join — ParallelJoinManager time
+ * 4. Federation Overhead — dispatch + aggregation + messaging
  *
- * KONFİGÜRASYON (CLUSTER):
- *   - Thread pool = 16 (Deney 5'in optimum noktası)
- *   - Bucket size = 1000 (Deney 5'in optimum noktası)
+ * CONFIGURATION (CLUSTER):
+ * - Thread pool = 16 (Optimum point of Experiment 5)
+ * - Bucket size = 1000 (Optimum point of Experiment 5)
  *
- * ÖLÇÜM (üç CSV birleştirilerek hesaplanır):
- *   - federation_latency.csv:  total_ms, dispatch_ms
- *   - executor_latency.csv:    store_exec_ms, transform_ms (per-store)
- *   - join_latency.csv:        join_time_ms (per-stage; Deney-5 logger)
+ * MEASUREMENT (calculated by combining three CSVs):
+ * - federation_latency.csv: total_ms, dispatch_ms
+ * - executor_latency.csv: store_exec_ms, transform_ms (per-store)
+ * - join_latency.csv: join_time_ms (per-stage; Experiment-5 logger)
  *
  * Federation Overhead = total - max(store_exec across stores)
- *                              - max(transform across stores)
- *                              - sum(join_time across stages)
+ * - max(transform across stores)
+ * - sum(join_time across stages)
  *
- * ÇALIŞTIRMA:
- * # Terminal-1 (cluster node):
+ * EXECUTION: * # Terminal-1 (cluster node):
  * sbt -J-Xmx8g \
- * -Daquapool.dispatcher.parallelism=16 \
+ * -Daquapool.dispatcher.parallelism=16\
  * -Daquapool.join.bucket-size=1000 \
  * -Daquapool.join.log-file=join_latency.csv \
  * -Daquapool.latency.executor-log=executor_latency.csv \
@@ -50,9 +49,9 @@ import scala.util.{Failure, Success, Try}
  * # Terminal-2 (benchmark):
  * sbt "runMain querying.evaluation.LatencyBreakdownBenchmark"
  *
- * SORGULAR: 7 compound (A.8.1 - A.8.7)
- * RUN: 3 warm-up + 10 measurement = 13 run/sorgu = 91 toplam
- * SÜRE: ~1.5-2 saat
+ * QUESTIONS: 7 compounds (A.8.1 - A.8.7)
+ * RUN: 3 warm-up + 10 measurement = 13 runs/query = 91 total
+ * DURATION: ~1.5-2 hours
  */
 object LatencyBreakdownBenchmark {
 
@@ -62,7 +61,7 @@ object LatencyBreakdownBenchmark {
   val MEASURE_RUNS = 10
 
   val compoundQueries: Seq[(String, Map[String, String])] = Seq(
-    // ─── Time-Series Single Queries (A.2.x → InfluxDB üzerinden) ───
+    // ─── Time-Series Single Queries (via A.2.x → InfluxDB) ───
     ("A.2.1", Queries.Query_A_2_1),
     ("A.2.2", Queries.Query_A_2_2),
     ("A.2.3", Queries.Query_A_2_3),
@@ -77,7 +76,7 @@ object LatencyBreakdownBenchmark {
     ("A.2.12", Queries.Query_A_2_12),
     ("A.2.13", Queries.Query_A_2_13),
 
-    // ─── Key-Value Single Queries (A.4.x → Redis üzerinden) ────
+    // ─── Key-Value Single Queries (via A.4.x → Redis) ────
     ("A.4.1", Queries.Query_A_4_1),
     ("A.4.2", Queries.Query_A_4_2),
     ("A.4.3", Queries.Query_A_4_3),
@@ -115,12 +114,12 @@ object LatencyBreakdownBenchmark {
     val port = if (args.isDefinedAt(1)) args(1) else "2553"
 
     println("=" * 70)
-    println("  Deney-4: Latency Breakdown Benchmark")
+    println("  Latency Breakdown Benchmark")
     println("=" * 70)
-    println(s"  Sorgular:        ${compoundQueries.size} compound (A.8.1 - A.8.7)")
+    println(s"  Queries:        ${compoundQueries.size} compound (A.8.1 - A.8.7)")
     println(s"  Warm-up runs:    $WARMUP_RUNS per query")
     println(s"  Measure runs:    $MEASURE_RUNS per query")
-    println(s"  Toplam:          ${compoundQueries.size * (WARMUP_RUNS + MEASURE_RUNS) + 3} run")
+    println(s"  Sum:          ${compoundQueries.size * (WARMUP_RUNS + MEASURE_RUNS) + 3} run")
     println("=" * 70)
 
     val sysConfig = ConfigFactory.parseString(s"akka.remote.artery.canonical.hostname = $ipAddress")
@@ -135,10 +134,10 @@ object LatencyBreakdownBenchmark {
       "shared-cluster-client"
     )
     Thread.sleep(2000)
-    println("  ClusterClient hazır.\n")
+    println("  ClusterClient is ready.\n")
 
-    // ─── Sistem warm-up
-    println("[Sistem Warm-up] 3 sorgu...")
+    // ─── System warm-up
+    println("[System Warm-up] 3 queries...")
     for (i <- 1 to 3) {
       val (qName, qMap) = compoundQueries(i % compoundQueries.size)
       val qid = queryIdOf("warmup-system", qName, i)
@@ -148,9 +147,9 @@ object LatencyBreakdownBenchmark {
       println(s"  sistem-warmup $i/3 ($qName): ${if (res.isSuccess) "OK" else "HATA"}")
       Thread.sleep(1000)
     }
-    println("  Sistem hazır.\n")
+    println("  System is ready.\n")
 
-    // ─── Her sorgu için warm-up + measurement
+    // ─── Warm-up and measurement for each query.
     for ((qName, qMap) <- compoundQueries) {
       println(s"┌─── $qName ───┐")
 
@@ -185,11 +184,11 @@ object LatencyBreakdownBenchmark {
     }
 
     println("=" * 70)
-    println("  Benchmark tamamlandı.")
-    println("  Cluster node'un çalışma dizininde 3 CSV oluşmuş olmalı:")
+    println("  Benchmark completed.")
+    println("  Three CSV files should have been created in the cluster node's working directory:")
     println("    - federation_latency.csv")
     println("    - executor_latency.csv")
-    println("    - join_latency.csv  (Deney-5'ten gelen logger)")
+    println("    - join_latency.csv  (Logger from ParallelJoinBenchmark)")
     println("=" * 70)
 
     sharedClusterClient ! PoisonPill

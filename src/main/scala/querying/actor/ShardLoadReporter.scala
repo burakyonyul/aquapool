@@ -13,53 +13,47 @@ import scala.concurrent.duration._
 import scala.util.Try
 
 /**
- * =====================================================================
- * ShardLoadReporter — Yük Dağılım Kanıtı Toplayıcı
- * =====================================================================
+ * ====================================================================
+ * ShardLoadReporter — Load Distribution Proof Collector
+ * ======================================================================= *
+ * PURPOSE:
+ * It runs on the AQuAPooL process (cluster member) side. Every ~5
+ * seconds, it retrieves GetClusterShardingStats
+ * from the cluster sharding API and writes the result to a CSV. This statistic shows how many
+ * shards are active in each node and how many entities are alive in each shard. *
+ * EVIDENCE VALUE:
+ * In a 2-node configuration, the CSV lines should show:
  *
- * AMAÇ:
- *   AQuAPooL süreci (cluster member) tarafında çalışır. Her ~5
- *   saniyede bir cluster sharding API'sinden GetClusterShardingStats
- *   alır ve sonucu CSV'ye yazar. Bu istatistik, her node'da kaç
- *   shard'ın aktif olduğunu ve her shard'da kaç entity'nin canlı
- *   olduğunu gösterir.
+ * timestamp, node, shard_count, entity_count
+ * 167...000, 155.223.25.1:2551, 50, ~100
+ * 167...000, 155.223.25.2:2551, 50, ~100
  *
- * KANIT DEĞERİ:
- *   2-node konfigürasyonunda CSV satırları şunu göstermeli:
+ * In a 1-node configuration:
  *
- *      timestamp, node, shard_count, entity_count
- *      167...000, 155.223.25.1:2551, 50, ~100
- *      167...000, 155.223.25.2:2551, 50, ~100
+ * 167...000, 155.223.25.1:2551, 100, ~200
  *
- *   1-node konfigürasyonunda:
+ * The 2-node lines DIRECTLY prove approximately symmetric load distribution
+ * — clearly cuts through reviewer 1's objection. *
+ * STARTING:
+ * In AQuAPooL's Main.scala, after the Federation region is started with ClusterSharding.start:
  *
- *      167...000, 155.223.25.1:2551, 100, ~200
+ * val federatorRegion = ClusterSharding(system).start(
+ * typeName = "Federator",
+ * entityProps = Federationr.props(...),
+ * settings = ClusterShardingSettings(system),
+ * extractEntityId = ...,
+ * extractShardId = ...
+ * )
  *
- *   2-node satırları yaklaşık simetrik yük dağılımını DOĞRUDAN
- *   kanıtlar — hakem 1'in itirazını net şekilde keser.
+ * system.actorOf(
+ * ShardLoadReporter.props("Federator"),
+ * "shard-load-reporter"
+ * )
  *
- * BAŞLATMA:
- *   AQuAPooL'un Main.scala'sında, ClusterSharding.start ile Federator
- *   shard region başlatıldıktan SONRA:
- *
- *     val federatorRegion = ClusterSharding(system).start(
- *       typeName = "Federator",
- *       entityProps = Federator.props(...),
- *       settings = ClusterShardingSettings(system),
- *       extractEntityId = ...,
- *       extractShardId = ...
- *     )
- *
- *     system.actorOf(
- *       ShardLoadReporter.props("Federator"),
- *       "shard-load-reporter"
- *     )
- *
- * ÇIKTI:
- *   shard_load_<host>_<port>.csv
- *   Her node kendi dosyasını yazar (MetricsListener gibi). Toplama
- *   AQuAPooL süreci sonrası deney makinesine scp ile alınır.
- * =====================================================================
+ * OUTPUT:
+ * shard_load_<host>_<port>.csv
+ * Each node writes its own file (like MetricsListener). Collection
+ * After the AQuAPooL process, it is retrieved to the experimental machine with scp. * ===================================================================
  */
 object ShardLoadReporter {
   case object Tick
@@ -80,7 +74,7 @@ class ShardLoadReporter(shardTypeName: String, intervalSeconds: Int)
 
   private implicit val askTimeout: Timeout = Timeout(3.seconds)
 
-  // Her node ayrı dosya — çakışma yok
+  // Each node has a separate file — no conflicts.
   private val host = Option(selfAddress.host).getOrElse("localhost")
   private val port = selfAddress.port.getOrElse(0)
   private val csvPath = s"shard_load_${host}_$port.csv"
@@ -113,11 +107,11 @@ class ShardLoadReporter(shardTypeName: String, intervalSeconds: Int)
 
   def receive: Receive = {
     case Tick =>
-      // Cluster genelinde shard dağılım istatistiğini iste.
-      // Sadece bir node'un istemesi yeter (cluster-wide), ama her
-      // node istese de zarar yok — sadece daha çok satır olur.
-      // Burada sadece KENDİ node'umuz istesin: en küçük adresli node
-      // sorumluluğu üstlenir.
+      // Request the shard distribution statistic across the cluster.
+      // It's enough for just one node to request it (cluster-wide), but it's okay if every
+      // node requests it — it will just add more rows.
+      // Here, only OUR OWN node should request it: the node with the smallest address
+      // takes responsibility.
       val members = cluster.state.members
         .filter(m => m.status == akka.cluster.MemberStatus.Up)
         .map(_.address)
@@ -146,7 +140,7 @@ class ShardLoadReporter(shardTypeName: String, intervalSeconds: Int)
                 }
               }
               writer.flush()
-            case _ => // beklenmeyen yanıt
+            case _ => // unexpected response
           }
       }
   }

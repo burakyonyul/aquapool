@@ -16,7 +16,7 @@ import scala.util.{Failure, Success, Try}
 
 /**
  * =====================================================================
- * Deney-2: Scalability (Cluster Sharding) Throughput Benchmark
+ * Scalability (Cluster Sharding) Throughput Benchmark
  * =====================================================================
  *
  * AMAÇ:
@@ -57,17 +57,17 @@ object ScalabilityBenchmark {
   implicit val timeout: Timeout = Timeout(10.minutes)
   val THROUGHPUT_REPEATS = 5
 
-  // ─── Sorgu havuzu (Deney-1 ile aynı sorgular, string'lere dokunulmadı)
+  // ─── Query pool (Same queries as AquaPoolBenchmark, strings untouched)
   val queryPool: Seq[(String, Map[String, String])] = Seq(
     ("A.2.11", Queries.Query_A_2_11),  // InfluxDB temporal
-    ("A.2.12", Queries.Query_A_2_12),  // InfluxDB temporal, ~0.1s (hafif)
+    ("A.2.12", Queries.Query_A_2_12),  // InfluxDB temporal, ~0.1s (light)
     ("A.4.3",  Queries.Query_A_4_3),   // Redis, ~0.01s
     ("A.4.7",  Queries.Query_A_4_7),   // Redis, ~0.01s
     ("A.4.9",  Queries.Query_A_4_9),   // Redis, ~0.01s
-    ("A.6.4",  Queries.Query_A_6_4),   // ES, 3 rows, ~0.7s (hafif ES)
-    ("A.6.5",  Queries.Query_A_6_5),   // ES, 1 row, ~0.5s (en hafif ES)
-    ("A.8.1",  Queries.Query_A_8_1),   // R+I compound, ~1.6s (orta)
-    ("A.8.5",  Queries.Query_A_8_5),   // R+P compound, ~0.03s (hafif)
+    ("A.6.4",  Queries.Query_A_6_4),   // ES, 3 rows, ~0.7s (light ES)
+    ("A.6.5",  Queries.Query_A_6_5),   // ES, 1 row, ~0.5s (lightest ES)
+    ("A.8.1",  Queries.Query_A_8_1),   // R+I compound, ~1.6s (mid)
+    ("A.8.5",  Queries.Query_A_8_5),   // R+P compound, ~0.03s (light)
     ("A.8.7",  Queries.Query_A_8_7)   // R+P+E+I compound
   )
 
@@ -78,11 +78,11 @@ object ScalabilityBenchmark {
     val port       = if (args.isDefinedAt(2)) args(2) else "2553"
 
     println("=" * 70)
-    println("  Deney-2: Scalability Throughput Benchmark")
-    println(s"  Konfigürasyon: $nodeConfig AQuAPooL")
+    println("  Scalability Throughput Benchmark")
+    println(s"  Configuration: $nodeConfig AQuAPooL")
     println("=" * 70)
 
-    // ─── Actor system başlat
+    // ─── Start the actor system
     val config = ConfigFactory.parseString(s"akka.remote.artery.canonical.hostname = $ipAddress")
       .withFallback(ConfigFactory.parseString(s"akka.remote.artery.canonical.port = $port"))
       .withFallback(ConfigFactory.load("agent.conf"))
@@ -91,24 +91,23 @@ object ScalabilityBenchmark {
     implicit val ec: ExecutionContext = system.dispatcher
 
     // ─────────────────────────────────────────────────────────────────
-    // TEK PAYLAŞIMLI ClusterClient OLUŞTUR
-    //
-    // Tüm Agent'lar bu client'ı kullanacak.
-    // Tek TCP bağlantısı → receptionist ezilmez.
-    // ClusterClient kendi içinde multiplexing yapar — birden fazla
-    // mesajı aynı bağlantı üzerinden eşzamanlı gönderebilir.
+    // CREATE A SINGLE SHARED ClusterClient
+    // All Agents will use this client.
+    // Single TCP connection → receptionist is not overwhelmed.
+    // The ClusterClient performs multiplexing internally — it can send multiple
+    // messages simultaneously over the same connection.
     // ─────────────────────────────────────────────────────────────────
     val sharedClusterClient = system.actorOf(
       ClusterClient.props(ClusterClientSettings(system)),
       "shared-cluster-client"
     )
 
-    // ClusterClient'ın bağlanması için kısa bekleme
+    // Short wait for ClusterClient to connect.
     Thread.sleep(2000)
-    println("  Paylaşımlı ClusterClient oluşturuldu.\n")
+    println("  A shared cluster client has been created.\n")
 
     // ─── Warm-up
-    println("[Warm-up] 3 sorgu ile sistem ısıtılıyor...")
+    println("[Warm-up] The system is being heated with 3 queries....")
     for (i <- 1 to 3) {
       val (qName, qMap) = queryPool(i % queryPool.size)
       val warmupAgent = system.actorOf(Agent.props(sharedClusterClient), s"WarmupAgent-$i")
@@ -120,10 +119,10 @@ object ScalabilityBenchmark {
       println(s"  Warm-up $i/3 ($qName): ${if (result.isSuccess) "OK" else "HATA"}")
     }
     Thread.sleep(1000)
-    println("  Sistem hazır.\n")
+    println("  System is ready.\n")
 
-    // ─── Shard dağılım kontrolü
-    println("  [Shard Dağılım Kontrolü]")
+    // ─── Shard distribution control
+    println("  [Shard distribution control]")
     val shardSet = scala.collection.mutable.Set[Int]()
     for (i <- 0 until 10) {
       val (qName, qMap) = queryPool(i % queryPool.size)
@@ -133,13 +132,13 @@ object ScalabilityBenchmark {
       println(f"    $qName%-10s senderPath=variation-$i → shard=$shardId%3d")
     }
     if (shardSet.size <= 1) {
-      println("\n  ⚠ UYARI: Tüm sorgular AYNI shard'a düşüyor!")
-      println("  Federator.scala değişikliğini kontrol edin.\n")
+      println("\n  ⚠ WARNING: All queries land in the SAME shard.!")
+      println("  Check the changes to federator.scala..\n")
     } else {
-      println(s"  ✓ ${shardSet.size} farklı shard'a dağılım var.\n")
+      println(s"  ✓There is a distribution across ${shardSet.size} different shards.\n")
     }
 
-    // ─── Throughput testi
+    // ─── Throughput test
     val outputFile = s"throughput_results_$nodeConfig.csv"
     val csvWriter = new PrintWriter(new FileWriter(outputFile))
     csvWriter.println("config,concurrency,repeat,total_queries,completed,failed," +
@@ -148,22 +147,22 @@ object ScalabilityBenchmark {
     val concurrencyLevels = Seq(10, 20, 30)
 
     println("[Throughput Testi]")
-    println(s"  Konfigürasyon:    $nodeConfig AQuAPooL")
+    println(s"  Configuration:    $nodeConfig AQuAPooL")
     println(s"  ClusterClient:    paylaşımlı (tek TCP bağlantısı)")
-    println(s"  Sorgu havuzu:     ${queryPool.size} sorgu × senderPath varyasyonu")
+    println(s"  Query pool:     ${queryPool.size} sorgu × senderPath varyasyonu")
     println(s"  Concurrency:      ${concurrencyLevels.mkString(", ")}")
-    println(s"  Tekrar:           $THROUGHPUT_REPEATS")
-    println(s"  Çıktı:            $outputFile")
+    println(s"  Repeat:           $THROUGHPUT_REPEATS")
+    println(s"  Output:            $outputFile")
     println()
 
     for (concurrency <- concurrencyLevels) {
-      println(s"  ┌─── Concurrency: $concurrency eşzamanlı sorgu ───┐")
+      println(s"  ┌─── Concurrency: $concurrency concurrent queries ───┐")
 
       for (repeat <- 1 to THROUGHPUT_REPEATS) {
 
         // ───────────────────────────────────────────────────────────
-        // Her sorgu için ayrı Agent oluştur (senderActor state izolasyonu)
-        // AMA hepsi aynı sharedClusterClient'ı kullanır (tek TCP)
+        // Create a separate Agent for each query (senderActor state isolation)
+        // BUT they all use the same sharedClusterClient (single TCP)
         // ───────────────────────────────────────────────────────────
         val batchStartTime = System.nanoTime()
 
@@ -172,7 +171,7 @@ object ScalabilityBenchmark {
           val uniqueSenderPath = s"C$concurrency-R$repeat-Q$i"
           val agentName = s"Agent-$uniqueSenderPath"
 
-          // Agent paylaşımlı ClusterClient ile oluşturulur
+          // The agent is created with a shared ClusterClient.
           val agent = system.actorOf(Agent.props(sharedClusterClient), agentName)
           val queryStartTime = System.nanoTime()
 
@@ -188,7 +187,7 @@ object ScalabilityBenchmark {
           }
         }
 
-        // ─── Tüm sonuçları bekle
+        // ─── Wait for all the results.
         val latencies = new ArrayBuffer[Long]()
         var completed = 0
         var failed = 0
@@ -206,7 +205,7 @@ object ScalabilityBenchmark {
           }
         }
 
-        // ─── İstatistikler
+        // ─── Statistics
         val batchElapsedMs = (System.nanoTime() - batchStartTime) / 1e6
         val throughput = if (batchElapsedMs > 0) completed / (batchElapsedMs / 1000.0) else 0.0
 
@@ -228,9 +227,9 @@ object ScalabilityBenchmark {
           f", $throughput%.2f q/s" +
           f", lat=${meanLat}%.0f±${stdLat}%.0f ms" +
           f" [${minLat}%.0f–${maxLat}%.0f ms]" +
-          (if (failed > 0) s", ⚠ $failed BAŞARISIZ" else ""))
+          (if (failed > 0) s", ⚠ $failed FAILS" else ""))
 
-        // Batch arası temizleme (Agent PoisonPill'lerinin işlenmesi için)
+        // Batch cleaning (for processing Agent Poison Pills)
         Thread.sleep(3000)
       }
 
@@ -239,13 +238,13 @@ object ScalabilityBenchmark {
 
     csvWriter.close()
 
-    // ─── Kapat
+    // ─── Close
     println("=" * 70)
     println(s"  $nodeConfig testi tamamlandı!")
     println(s"  Sonuçlar: $outputFile")
     println("=" * 70)
 
-    // ClusterClient'ı da kapat
+    // Also closte the ClusterClient
     sharedClusterClient ! PoisonPill
     Thread.sleep(1000)
 
